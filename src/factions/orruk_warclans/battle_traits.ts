@@ -7,7 +7,7 @@ const OrrukWarclansBattleTraits = {
       {
         name: `Time to Get Stuck In!`,
         desc: `You can pick this battle tactic only in your first or second turn. You complete this tactic if the model picked to be your general and all of the models in your army that are on the battlefield are within 12" of an enemy unit at the end of this turn.`,
-        when: [START_OF_ROUND],
+        when: [START_OF_HERO_PHASE],
       },
       {
         name: `Destroyer of Empires`,
