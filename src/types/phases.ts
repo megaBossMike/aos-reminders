@@ -32,6 +32,9 @@ type TBattleshockPhaseEnd = 'END_OF_BATTLESHOCK_PHASE'
 // Global Saves
 type TSavesPhase = 'SAVES'
 
+// Global Battle Tactics
+type TBattleTacticsPhase = 'BATTLE_TACTICS'
+
 // Global Wards
 type TWardsPhase = 'WARDS'
 
@@ -62,6 +65,7 @@ export const END_OF_BATTLESHOCK_PHASE: TBattleshockPhaseEnd = 'END_OF_BATTLESHOC
 export const SAVES_PHASE: TSavesPhase = 'SAVES'
 export const WARDS_PHASE: TWardsPhase = 'WARDS'
 export const WOUND_ALLOCATION_PHASE: TWoundAllocationPhase = 'WOUND_ALLOCATION'
+export const BATTLE_TACTICS: TBattleTacticsPhase = 'BATTLE_TACTICS'
 
 // Turn Types
 type TSetupStart = 'START_OF_SETUP'
@@ -381,6 +385,7 @@ export type TTurnWhen =
   | TRoundEnd
   | TGameEnd
   | THeroPhaseStart
+  | TBattleTacticsPhase
   | THeroPhase
   | THeroPhaseEnd
   | TMovementPhaseStart

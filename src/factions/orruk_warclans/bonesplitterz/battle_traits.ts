@@ -1,5 +1,5 @@
 import { tagAs } from 'factions/metatagger'
-import { COMBAT_PHASE, SAVES_PHASE, START_OF_COMBAT_PHASE, START_OF_GAME, START_OF_ROUND } from 'types/phases'
+import { BATTLE_TACTICS, COMBAT_PHASE, SAVES_PHASE, START_OF_COMBAT_PHASE, START_OF_GAME } from 'types/phases'
 
 const BonesplitterzBattleTraits = {
   'Battle Tactics': {
@@ -7,7 +7,7 @@ const BonesplitterzBattleTraits = {
       {
         name: `Kill Da Big 'Un!`,
         desc: `You can pick this battle tactic only if the model picked to be your general has the BONESPLITTERZ keyword. Pick 1 enemy MONSTER. You complete this tactic if that MONSTER was slain by attacks made by a friendly BONESPLITTERZ unit during this turn.`,
-        when: [START_OF_ROUND],
+        when: [BATTLE_TACTICS],
       },
     ],
   },
