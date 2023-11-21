@@ -6,6 +6,7 @@ import {
   COMBAT_PHASE,
   DURING_GAME,
   DURING_ROUND,
+  END_OF_ANY_PHASE,
   END_OF_CHARGE_PHASE,
   END_OF_COMBAT_PHASE,
   END_OF_HERO_PHASE,
@@ -22,6 +23,7 @@ import {
   WOUND_ALLOCATION_PHASE,
 } from 'types/phases'
 import command_abilities from './command_abilities'
+import rule_sources from './rule_sources'
 import scenery from './scenery'
 import spells from './spells'
 
@@ -68,8 +70,9 @@ const BugRiderEffects = [
   },
   {
     name: `Thrumming with Life`,
-    desc: `At the end of each phase, if any models were slain by an attack made by this unit, you can heal all wounds allocated to this unit.`,
+    desc: `At the end of each phase, if any enemy models were slain by an attack made by this unit in that phase, you can heal all wounds allocated to this unit.`,
     when: [DURING_GAME, WOUND_ALLOCATION_PHASE],
+    rule_sources: [rule_sources.BATTLETOME_SYLVANETH, rule_sources.ERRATA_OCTOBER_2022],
     shared: true,
   },
 ]
@@ -125,7 +128,7 @@ const Units = {
       {
         name: `Talon of the Dwindling`,
         desc: `Roll a D6 at the end of any phase if any wounds are allocated from this weapon and not negated, and the enemy model has not been slain. On a 6 the enemy model is slain.`,
-        when: [COMBAT_PHASE],
+        when: [END_OF_ANY_PHASE],
       },
       {
         name: `Rise of Life`,
@@ -184,7 +187,7 @@ const Units = {
       ...TreeLordBaseEffects,
       {
         name: `Silent Communion`,
-        desc: `Once per battle, in your hero phase, if this unit is on the battlefield, you can setup 1 friendly Awakend Wyldwood terrain feature consisting of 1 scenery piece on the battlefield of that model and more than 3" from all other models, endless spells, invocations, terrain features or objectives, and add it to your army.`,
+        desc: `Once per battle, in your hero phase, if this unit is on the battlefield, you can setup 1 friendly Awakened Wyldwood terrain feature consisting of 1 scenery piece on the battlefield of that model and more than 3" from all other models, endless spells, invocations, terrain features or objectives, and add it to your army.`,
         when: [HERO_PHASE],
       },
       GenericEffects.WizardOneSpellEffect,
@@ -340,7 +343,7 @@ const Units = {
         when: [DURING_GAME],
       },
       {
-        name: `Tanglethorn Thicket (Sythes)`,
+        name: `Tanglethorn Thicket (Scythes)`,
         desc: `If any models in an enemy unit finish a pile-in move within 3" of any friendly units with this ability, that enemy unit suffers 1 mortal wound after it finishes its pile-in.`,
         when: [COMBAT_PHASE],
       },
@@ -351,7 +354,7 @@ const Units = {
       },
       {
         name: `Sundering Strikes (Greatswords)`,
-        desc: `If the unmodified wound roll for an attack made with a Kurnoth Greatsword is 6, that attack inflicts 2 mortal wounds on the target and the attack sequence ends.`,
+        desc: `If the unmodified hit roll for an attack made with a Kurnoth Greatsword is 6, that attack inflicts 2 mortal wounds on the target and the attack sequence ends.`,
         when: [COMBAT_PHASE],
       },
     ],

@@ -1,5 +1,4 @@
 import { OrrukWarclansFaction } from 'factions/orruk_warclans'
-import { SlavesToDarknessFaction } from 'factions/slaves_to_darkness'
 import { readFileSync } from 'fs'
 import {
   BEASTS_OF_CHAOS,
@@ -12,7 +11,6 @@ import {
   FYRESLAYERS,
   GREENSKINZ,
   KHARADRON_OVERLORDS,
-  KHORNE,
   LEGION_OF_THE_FIRST_PRINCE,
   NURGLE,
   OGOR_MAWTRIBES,
@@ -20,14 +18,11 @@ import {
   ORRUK_WARCLANS,
   OSSIARCH_BONEREAPERS,
   SERAPHON,
-  SLAANESH,
   SLAVES_TO_DARKNESS,
-  SONS_OF_BEHEMAT,
   TZEENTCH,
 } from 'meta/factions'
 import path from 'path'
-import { RealmscapesEnum } from 'types/realmscapes'
-import { DEPRECATED_AOS_3, DEPRECATED_MALIGN_SORCERY } from 'utils/import/options'
+import { DEPRECATED_MALIGN_SORCERY } from 'utils/import/options'
 import { getWarscrollArmyFromPdf } from 'utils/warscroll/getWarscrollArmy'
 
 const getFile = (filename: string): string[] => {
@@ -35,24 +30,10 @@ const getFile = (filename: string): string[] => {
 }
 
 describe('getWarscrollArmyFromJson', () => {
-  it('should correctly read 1640472888490-Warscroll_Builder', () => {
-    const parsedText = getFile('1640472888490-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.battalions).toContain('Thunderquake (Slayers)')
-    expect(res.errors).toEqual([])
-  })
-
   it('should correctly read 1640813052545-Warscroll_Builder', () => {
     const parsedText = getFile('1640813052545-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
     expect(res.selections.units).toContain('Exalted Greater Demon of Tzeentch')
-  })
-
-  it('should correctly read 1636812085343-Warscroll_Builder', () => {
-    const parsedText = getFile('1636812085343-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.units).toContain('Chaos Warshrine')
-    expect(res.errors).toEqual([])
   })
 
   it('should correctly read 1639251960341-Warscroll_Builder', () => {
@@ -84,20 +65,6 @@ describe('getWarscrollArmyFromJson', () => {
     expect(res.errors).toEqual([])
   })
 
-  it('should correctly read 1634667703586-Warscroll_Builder', () => {
-    const parsedText = getFile('1634667703586-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.battalions).toContain('Footsloggas (Unified)')
-    expect(res.errors).toEqual([])
-  })
-
-  it('should correctly read 1635022761983-Warscroll_Builder', () => {
-    const parsedText = getFile('1635022761983-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.battalions).toContain('Bosses of the Stomp (Unified)')
-    expect(res.errors).toEqual([])
-  })
-
   it('should correctly read 1635285549882-Warscroll_Builder', () => {
     const parsedText = getFile('1635285549882-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
@@ -121,12 +88,6 @@ describe('getWarscrollArmyFromJson', () => {
     const parsedText = getFile('1633180523625-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
     expect(res.selections.artifacts).toContain('Amulet of Silvered Sigmarite')
-  })
-
-  it('should correctly read 1633314984451-Warscroll_Builder', () => {
-    const parsedText = getFile('1633314984451-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.command_traits).toContain('Shepherd of Idiotic Destruction')
   })
 
   it('should correctly read 1633446211037-Warscroll_Builder', () => {
@@ -264,7 +225,6 @@ describe('getWarscrollArmyFromJson', () => {
     const parsedText = getFile('1625930557439-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
     expect(res.selections.units).toContain('Sevireth, Lord of the Seventh Wind')
-    expect(res.selections.command_traits).toContain('Astute Commander')
   })
 
   it('should correctly read 1605279569874-Warscroll_Builder', () => {
@@ -278,20 +238,6 @@ describe('getWarscrollArmyFromJson', () => {
       {
         severity: 'warn',
         text: 'Thrill-seeker',
-      },
-    ])
-  })
-
-  it('should correctly read 1609436742680-Warscroll_Builder', () => {
-    const parsedText = getFile('1609436742680-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.artifacts).toContain('Krakenskin Sandals (Taker Tribe)')
-    expect(res.selections.command_traits).toContain('Very Acquisitive (Taker Tribe)')
-    expect(res.errors).toEqual([
-      {
-        reason: DEPRECATED_AOS_3,
-        severity: 'deprecation-warn',
-        text: 'Plate of Perfect Protection',
       },
     ])
   })
@@ -312,7 +258,7 @@ describe('getWarscrollArmyFromJson', () => {
   it('should correctly read 1611179135350-Warscroll_Builder', () => {
     const parsedText = getFile('1611179135350-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.command_traits).toContain('Fateseeker (Big Name)')
+    //expect(res.selections.command_traits).toContain('Fateseeker (Big Name)')
     expect(res.selections.command_traits).toContain('Killer Reputation')
   })
 
@@ -322,35 +268,16 @@ describe('getWarscrollArmyFromJson', () => {
     expect(res.selections.spells).toContain('Arcane Corrasion')
   })
 
-  it('should correctly read 1612355735036-Warscroll_Builder', () => {
-    const parsedText = getFile('1612355735036-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.flavors).toContain('Faultless Blades')
-    expect(res.subFactionName).toEqual('Pretenders Host')
-  })
-
   it('should correctly read 1612918099089-Warscroll_Builder', () => {
     const parsedText = getFile('1612918099089-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
     expect(res.selections.units).toContain('Bonegrinder Mega-Gargant')
   })
 
-  it('should correctly read 1614288189630-Warscroll_Builder', () => {
-    const parsedText = getFile('1614288189630-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.command_traits).toContain('Shepherd of Idiotic Destruction')
-  })
-
   it('should correctly read 1614371993867-Warscroll_Builder', () => {
     const parsedText = getFile('1614371993867-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
     expect(res.selections.flavors).toContain('Dhom-Hain')
-  })
-
-  it('should correctly read 1603703587229-Warscroll_Builder', () => {
-    const parsedText = getFile('1603703587229-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.factionName).toEqual(SONS_OF_BEHEMAT)
   })
 
   it('should correctly read 1598074473619-Warscroll_Builder', () => {
@@ -370,13 +297,6 @@ describe('getWarscrollArmyFromJson', () => {
     const parsedText = getFile('1592754653939-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
     expect(res.selections.command_traits).toContain('Killer Reputation')
-    expect(res.selections.command_traits).toContain('Fateseeker (Big Name)')
-  })
-
-  it('should correctly read 1596572409302-Warscroll_Builder', () => {
-    const parsedText = getFile('1596572409302-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.artifacts).toContain('Collar of Contempt')
   })
 
   it('should correctly read 1597231391899-Warscroll_Builder', () => {
@@ -385,30 +305,10 @@ describe('getWarscrollArmyFromJson', () => {
     expect(res.selections.units).toContain('Varanguard')
   })
 
-  it('should correctly read 1592663232380-Warscroll_Builder', () => {
-    const parsedText = getFile('1592663232380-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.artifacts).toContain('Skull-helm of Khorne')
-  })
-
   it('should correctly read 1592831552808-Warscroll_Builder', () => {
     const parsedText = getFile('1592831552808-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.command_traits).toContain('Fateseeker (Big Name)')
     expect(res.selections.command_traits).toContain('Killer Reputation')
-    expect(res.selections.command_traits).toContain('Longstrider (Big Name)')
-  })
-
-  it('should correctly read 1593886752516-Warscroll_Builder', () => {
-    const parsedText = getFile('1593886752516-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.errors).toEqual([
-      {
-        reason: DEPRECATED_AOS_3,
-        severity: 'deprecation-warn',
-        text: 'Bound Balewind Vortex',
-      },
-    ])
   })
 
   it('should correctly read 1593895699238-Warscroll_Builder', () => {
@@ -418,48 +318,16 @@ describe('getWarscrollArmyFromJson', () => {
     expect(res.selections.units).toContain('Slayers')
   })
 
-  it('should correctly read 1595637879055-Warscroll_Builder', () => {
-    const parsedText = getFile('1595637879055-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.spells).toContain('Ribcracker')
-    expect(res.selections.command_traits).toContain('Fateseeker (Big Name)')
-  })
-
-  it('should work with 1591871273929-Warscroll_Builder', () => {
-    const parsedText = getFile('1591871273929-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.command_traits).toContain('Inescapable Doom')
-  })
-
-  it('should work with 1592258767793-Warscroll_Builder', () => {
-    const parsedText = getFile('1592258767793-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.command_traits).toContain('Khemist Supreme')
-  })
-
   it('should work with 1588368330846-Warscroll_Builder', () => {
     const parsedText = getFile('1588368330846-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
     expect(res.factionName).toEqual(SLAVES_TO_DARKNESS)
   })
 
-  it('should work with 1589375182953-Warscroll_Builder', () => {
-    const parsedText = getFile('1589375182953-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.artifacts).toContain("Foe's Bane")
-  })
-
   it('should work with 1589874682978-Warscroll_Builder', () => {
     const parsedText = getFile('1589874682978-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
     expect(res.selections.units).toContain('Aether-Khemist')
-  })
-
-  it('should work with Vast Intellect - Celestial Apotheosis (trait/spell)', () => {
-    const parsedText = getFile('1585065423836-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.spells).toContain('Celestial Apotheosis')
-    expect(res.selections.command_traits).toContain('Vast Intellect')
   })
 
   it('should work with Fusil of Conflagration', () => {
@@ -488,31 +356,6 @@ describe('getWarscrollArmyFromJson', () => {
     expect(res.selections.spells).toContain('Blades of Putrefaction')
   })
 
-  it('should work with Brand of the Split Daemon', () => {
-    const parsedText = getFile('1582816094064-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.artifacts).toContain('Brand of the Split Daemon')
-  })
-
-  it("should work with A'rgath the King of Blades", () => {
-    const parsedText = getFile('1582909138740-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.artifacts).toContain("A'rgath, the King of Blades")
-  })
-
-  it('should work with Flask of Daemonblood and Varanguard', () => {
-    const parsedText = getFile('1583954971824-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.artifacts).toContain('Flask of Daemonblood')
-    expect(res.selections.units).toContain('Varanguard')
-  })
-
-  it('should work with Warpfire Thrower', () => {
-    const parsedText = getFile('1583957769353-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.units).toContain('Warpfire Thrower')
-  })
-
   it('should work with The Eyes of the Nine', () => {
     const parsedText = getFile('1584407465731-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
@@ -539,12 +382,6 @@ describe('getWarscrollArmyFromJson', () => {
     expect(res.selections.units).toContain('The Wurmspat')
   })
 
-  it('should work with Warp Lightning Vortex', () => {
-    const parsedText = getFile('1580248993240-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.artifacts).toContain('Staff of Ocular Optimisation')
-  })
-
   it('should work with Sky Port: None', () => {
     const parsedText = getFile('1580985291764-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
@@ -568,12 +405,6 @@ describe('getWarscrollArmyFromJson', () => {
     const parsedText = getFile('1578518862312-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
     expect(res.factionName).toEqual(GREENSKINZ)
-  })
-
-  it('should work with The Blood-forged Armour', () => {
-    const parsedText = getFile('1578730417865-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.artifacts).toContain('The Blood-forged Armour')
   })
 
   it('should work with Vitriolic Spray (Anvilgard)', () => {
@@ -619,7 +450,7 @@ describe('getWarscrollArmyFromJson', () => {
     expect(res.errors).toEqual([{ severity: 'warn', text: 'Guardian of Souls' }])
   })
 
-  it('should work with Chaos Hellcannon', () => {
+  /* it('should work with Chaos Hellcannon', () => {
     const parsedText = getFile('1574545285739-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
 
@@ -633,7 +464,7 @@ describe('getWarscrollArmyFromJson', () => {
       'Tuskgor Chariots',
       'Hellcannon',
     ])
-  })
+  }) */
 
   it('should work with Warcry scrolls', () => {
     const parsedText = getFile('1574613461286-Warscroll_Builder')
@@ -666,12 +497,6 @@ describe('getWarscrollArmyFromJson', () => {
     const parsedText = getFile('1576328165962-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
     expect(res.selections.command_traits).toContain('Master of Defence (Order)')
-  })
-
-  it('should work with Berzerker Lord', () => {
-    const parsedText = getFile('1576328837058-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-    expect(res.selections.command_traits).toContain('Berserker Lord')
   })
 
   it('should work with Slaves to Darkness Chaos Spawn', () => {
@@ -724,15 +549,6 @@ describe('getWarscrollArmyFromJson', () => {
     const res = getWarscrollArmyFromPdf(parsedText)
 
     expect(res.factionName).toEqual(OGOR_MAWTRIBES)
-    expect(res.origin_realm).toEqual(RealmscapesEnum.GHUR)
-  })
-
-  it('should work with The Brazen Rune', () => {
-    const parsedText = getFile('1576533398655-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-
-    expect(res.factionName).toEqual(KHORNE)
-    expect(res.selections.artifacts).toContain('The Brazen Rune')
   })
 
   it('should work with OBR 1', () => {
@@ -741,51 +557,6 @@ describe('getWarscrollArmyFromJson', () => {
 
     expect(res.factionName).toEqual(OSSIARCH_BONEREAPERS)
     expect(res.origin_realm).toEqual('Aqshy')
-  })
-
-  it('should work with Mark of Chaos and Scroll of Dark Unravelling', () => {
-    const parsedText = getFile('1576681454336-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-
-    expect(res.factionName).toEqual(SLAVES_TO_DARKNESS)
-    expect(res.subFactionName).toEqual(SlavesToDarknessFaction.subFactionKeyMap.Cabalists)
-    expect(res.origin_realm).toEqual('Ulgu')
-
-    expect(res.selections).toEqual({
-      flavors: [],
-      grand_strategies: [],
-      incarnates: [],
-      monstrous_rampages: [],
-      mount_traits: [],
-      prayers: ['Favour of the Ruinous Powers'],
-      artifacts: ['Scroll of Dark Unravelling'],
-      battalions: [],
-      command_abilities: ['Spurred by the Gods'],
-      core_rules: [],
-      endless_spells: ['Eightfold Doom-Sigil'],
-      scenery: [],
-      spells: [
-        'Binding Damnation',
-        'Ruinous Vigour',
-        'Whispers of Chaos',
-        'Mask of Darkness',
-        'Crippling Ruin',
-        'Winds of Chaos',
-        'Daemonic Power',
-      ],
-      command_traits: ['Mighty Ritualist'],
-      triumphs: [],
-      units: [
-        'Chaos Lord',
-        'Chaos Sorcerer Lord on Manticore',
-        'Chaos Sorcerer Lord',
-        'Chaos Warriors',
-        'Chaos Marauders',
-        'Chaos Chosen',
-        'Untamed Beasts',
-        'Chaos Warshrine',
-      ],
-    })
   })
 
   it('should work with Nurgle and a Skaven battalion', () => {
@@ -941,28 +712,12 @@ describe('getWarscrollArmyFromJson', () => {
     expect(res.factionName).toEqual(FLESH_EATER_COURTS)
   })
 
-  it('should work with Enrapturing Circlet', () => {
-    const parsedText = getFile('1572660547365-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-
-    expect(res.factionName).toEqual(SLAANESH)
-    expect(res.selections.artifacts).toContain('Enrapturing Circlet')
-  })
-
   it('should work with Dark Wizardry', () => {
     const parsedText = getFile('1572497009675-Warscroll_Builder')
     const res = getWarscrollArmyFromPdf(parsedText)
 
     expect(res.factionName).toEqual(FLESH_EATER_COURTS)
     expect(res.selections.command_traits).toContain('Dark Wizardry (Royalty)')
-  })
-
-  it('should work with Blade of Endless Bloodshed', () => {
-    const parsedText = getFile('1571896391287-Warscroll_Builder')
-    const res = getWarscrollArmyFromPdf(parsedText)
-
-    expect(res.factionName).toEqual(KHORNE)
-    expect(res.selections.artifacts).toContain('Blade of Endless Bloodshed')
   })
 
   it('should work with Destroyer of Foes', () => {

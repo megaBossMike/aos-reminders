@@ -3,15 +3,10 @@ const rule_sources = {
     name: 'Battletome: Ogor Mawtribes',
     type: 'battletome',
   },
-  ERRATA_JULY_2021: {
-    name: 'Errata (July 2021)',
+  ERRATA_APRIL_2023: {
+    name: 'Errata (April 2023)',
     type: 'errata',
-    url: 'https://www.warhammer-community.com/wp-content/uploads/2020/07/pNYA5eDUP4nzQYDc.pdf',
-  },
-  ERRATA_AUGUST_2021: {
-    name: 'Errata (August 2021)',
-    type: 'errata',
-    url: 'https://www.warhammer-community.com/wp-content/uploads/2020/07/KBGVUfJldQ33AYxE.pdf',
+    url: 'https://www.warhammer-community.com/wp-content/uploads/2020/07/AmayJMooi82E8FI5.pdf',
   },
 }
 

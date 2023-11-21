@@ -1,102 +1,63 @@
-import { keyPicker } from 'factions/metatagger'
-import { COMBAT_PHASE, DURING_GAME, END_OF_SETUP, HERO_PHASE, SHOOTING_PHASE } from 'types/phases'
-import artifacts from './artifacts'
-import command_abilities from './command_abilities'
-import command_traits from './command_traits'
-import rule_sources from './rule_sources'
-import spells from './spells'
+import meta_rule_sources from 'meta/rule_sources'
+import { BATTLESHOCK_PHASE, COMBAT_PHASE, DURING_GAME, HERO_PHASE, SHOOTING_PHASE } from 'types/phases'
 
 const Flavors = {
   Ymetrica: {
-    mandatory: {
-      artifacts: [keyPicker(artifacts, ["Mountain's Gift"])],
-      command_abilities: [keyPicker(command_abilities, ['Redoubled Force'])],
-      command_traits: [keyPicker(command_traits, ['Almighty Blow'])],
-    },
     effects: [
       {
         name: `Mountain Realm`,
-        desc: `The Enduring as Rock battle trait changes an attack that targets a YMETRICA ALARITH units in mountain stance to '-' if the weapon used for the attack has Rend -1 or -2.`,
+        desc: `The Enduring as Rock ability of friendly Ymetrica Alarith units worsens the Rend characteristic of attacks that target those units by 2 instead of 1, to a minimum of 0.`,
         when: [COMBAT_PHASE, SHOOTING_PHASE],
+        rule_sources: [meta_rule_sources.BATTLESCROLL_ANDTOR_SEPTEMBER_2023],
       },
     ],
   },
   Syar: {
-    mandatory: {
-      artifacts: [keyPicker(artifacts, ['The Perfect Blade'])],
-      command_abilities: [keyPicker(command_abilities, ['Deplete Reserves'])],
-      command_traits: [keyPicker(command_traits, ['Goading Arrogance'])],
-    },
     effects: [
       {
         name: `Gleaming Brightness`,
-        desc: `SYAR units start the battle with 2 aetherquartz reserves instead of 1.`,
+        desc: `Friendly Syar units start the battle with 2 aetherquartz reserves instead of 1.`,
         when: [DURING_GAME],
       },
     ],
   },
   Iliatha: {
-    mandatory: {
-      artifacts: [keyPicker(artifacts, ['Simulacra Amulet'])],
-      command_abilities: [keyPicker(command_abilities, ['Strike in Unison'])],
-    },
     effects: [
       {
-        name: `Soul-bond`,
-        desc: `Add 2 to the Bravery characteristic of ILIATHA VANARI and ILIATHA AELEMENTIRI units.`,
-        when: [DURING_GAME],
-      },
-      {
         name: `Unity of Purpose`,
-        desc: `After a friendly ILIATHA VANARI unit receives a command, you can pick 1 other friendly ILIATHA VANARI unit within 3" of that unit. If you do so, that other unit also receives that command.`,
+        desc: `Once per turn, you can say that 2 friendly Iliatha Vanari units will use their aetherquartz reserves to use an aetherquartz reserve ability in the same phase instead of only 1.`,
         when: [DURING_GAME],
-        rule_sources: [rule_sources.BATTLETOME_LUMINETH, rule_sources.ERRATA_JULY_2021],
       },
     ],
   },
   Zaitrec: {
-    mandatory: {
-      artifacts: [keyPicker(artifacts, ['Gift of Celennar'])],
-      spells: [keyPicker(spells, ['Overwhelming Heat'])],
-      command_traits: [keyPicker(command_traits, ['Fast Learner'])],
-    },
     effects: [
       {
         name: `Lambent Mystics`,
-        desc: `Add 1 to the first casting, dispelling or unbinding roll you make for each ZAITREC WIZARD in each hero phase. In addition, each ZAITREC WIZARD HERO knows 1 extra spell form the appropriate lore.`,
+        desc: `Add 1 to casting, dispelling or unbinding rolls for friendly Zaitrec Wizards.`,
         when: [HERO_PHASE],
       },
     ],
   },
   Alumnia: {
-    mandatory: {
-      artifacts: [keyPicker(artifacts, ['Waystone'])],
-      command_traits: [keyPicker(command_traits, ['Burning Gaze'])],
-      command_abilities: [keyPicker(command_abilities, ['Sieze the Moment'])],
-    },
     effects: [
       {
         name: `Claim the field`,
-        desc: `Up to 3 ALUMNIA VANARI or ALUMNIA SCINARI may make a normal move but cannot run.`,
-        when: [END_OF_SETUP],
+        desc: `If the base of each model in a friendly Alumnia Vanari unit is touching the bases of 2 or more other models in the same unit, each model in that unit that is within 6" of an objective counts as 2 models for the purposes of contesting that objective.`,
+        when: [BATTLESHOCK_PHASE],
       },
     ],
   },
   Helon: {
-    mandatory: {
-      artifacts: [keyPicker(artifacts, ['Metalith Dust'])],
-      command_traits: [keyPicker(command_traits, ['Skyrace Grand Champion'])],
-      command_abilities: [keyPicker(command_abilities, ['Gone Like the Wind'])],
-    },
     effects: [
       {
         name: `Gale of Killing Shafts`,
-        desc: `Add 1 to the attacks of missile weapons used by HELON models that are within 3" of an enemy unit.`,
+        desc: `In your shooting phase, when you pick a friendly Helon unit to shoot, you can say that it will unleash a gale of killing shafts. If you do so, in that phase, you can add 1 to hit rolls and wound rolls for that unit's missile weapons, but that unit can only target enemy units within 6" of it.`,
         when: [SHOOTING_PHASE],
+        rule_sources: [meta_rule_sources.BATTLESCROLL_ANDTOR_SEPTEMBER_2023],
       },
     ],
   },
 }
 
-// Note: We do NOT use tagAs for Flavors
 export default Flavors

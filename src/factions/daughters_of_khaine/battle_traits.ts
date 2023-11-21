@@ -1,5 +1,6 @@
 import { tagAs } from 'factions/metatagger'
 import { DAUGHTERS_OF_KHAINE } from 'meta/factions'
+import meta_rule_sources from 'meta/rule_sources'
 import {
   CHARGE_PHASE,
   COMBAT_PHASE,
@@ -7,8 +8,8 @@ import {
   SAVES_PHASE,
   START_OF_HERO_PHASE,
   START_OF_ROUND,
-  WOUND_ALLOCATION_PHASE,
 } from 'types/phases'
+import rule_sources from './rule_sources'
 
 const BattleTraits = {
   // Daughters of Khaine Allegiance
@@ -61,84 +62,44 @@ const BattleTraits = {
     effects: [
       {
         name: `Clash of Arms`,
-        desc: `You complete this tactic if 3 or more friendly units make a charge move this turn. If 2 or more of those units are WITCH AELVES or SISTERS OF SLAUGHTER, score 1 additional victory point.`,
-        when: [START_OF_ROUND],
+        desc: `You complete this tactic if 3 or more friendly units make a charge move this turn.`,
+        when: [START_OF_HERO_PHASE],
+        rule_sources: [
+          rule_sources.BATTLETOME_DAUGHTERS_OF_KHAINE,
+          rule_sources.ERRATA_DECEMBER_2022,
+          meta_rule_sources.BATTLESCROLL_ANDTOR_SEPTEMBER_2023,
+        ],
       },
       {
         name: `Cruel Delight`,
         desc: `You complete this tactic if 2 or more friendly KHINERAI units move using their Fire and Flight ability or Fight and Flight ability this turn.`,
-        when: [START_OF_ROUND],
+        when: [START_OF_HERO_PHASE],
       },
       {
         name: `Tide of Blades`,
-        desc: `You complete this tactic if there are 2 or more units from your starting army wholly within your opponent's territory at the end of this turn. If 2 or more of those units are WITCH AELVES, score 1 additional victory point.`,
-        when: [START_OF_ROUND],
+        desc: `You complete this tactic if there are 2 or more units from your starting army wholly within your opponent's territory at the end of this turn.`,
+        when: [START_OF_HERO_PHASE],
+        rule_sources: [
+          rule_sources.BATTLETOME_DAUGHTERS_OF_KHAINE,
+          rule_sources.ERRATA_DECEMBER_2022,
+          meta_rule_sources.BATTLESCROLL_GALLETIAN_CHAMPIONS_JANUARY_2022,
+          meta_rule_sources.BATTLESCROLL_ANDTOR_SEPTEMBER_2023,
+        ],
       },
       {
         name: `Executioner's Cult`,
         desc: `You can pick this battle tactic only if there is a friendly HIGH GLADIATRIX on the battlefield. You complete this tactic if an enemy HERO is slain by that unit's Killing Stroke ability this turn.`,
-        when: [START_OF_ROUND],
+        when: [START_OF_HERO_PHASE],
       },
       {
         name: `Hatred of Chaos`,
         desc: `You can pick this battle tactic only if you have a Hagg Nar or Khelt Nar army. You complete this tactic if 2 or more CHAOS units are destroyed this turn.`,
-        when: [START_OF_ROUND],
+        when: [START_OF_HERO_PHASE],
       },
       {
         name: `Unexpected Attack`,
         desc: `You complete this tactic if a friendly KHAINITE SHADOWSTALKERS unit uses its Shadow Leap ability and makes a charge move this turn.`,
-        when: [START_OF_ROUND],
-      },
-    ],
-  },
-
-  // Hagg Nar Flavor
-  'Daughters of the First Temple': {
-    effects: [
-      {
-        name: `Daughters of the First Temple`,
-        desc: `Add 1 to the number of the current battle round when determining the abilities gained by friendly HAGG NAR units from the Blood Rites battle trait (pg 66). This ability and other similar abilities are cumulative.`,
-        when: [START_OF_ROUND],
-      },
-    ],
-  },
-  // Draichi Ganeth Flavor
-  'Bladed Killers': {
-    effects: [
-      {
-        name: `Bladed Killers`,
-        desc: `Improve the Rend characteristic of melee weapons used by friendly DRAICHI GANETH WITCH AELVES units and friendly DRAICHI GANETH SISTERS OF SLAUGHTER units by 1 if those units made a charge move in the same turn.`,
-        when: [CHARGE_PHASE, COMBAT_PHASE],
-      },
-    ],
-  },
-  // Kraith Flavor
-  'Disciples of Slaughter': {
-    effects: [
-      {
-        name: `Disciples of Slaughter`,
-        desc: `After a friendly KRAITH SISTERS OF SLAUGHTER unit has fought for the first time in the combat phase, roll a dice. On a 4+, that unit can fight for a second time in that phase. The strike-last effect applies to that unit when they fight for that second time.`,
-        when: [COMBAT_PHASE],
-      },
-    ],
-  },
-  // Khelt Nar Flavor
-  'Strike and Fade': {
-    effects: [
-      {
-        name: `Strike and Fade`,
-        desc: `Friendly KHELT NAR units can retreat and still charge in the same turn.`,
-        when: [MOVEMENT_PHASE, CHARGE_PHASE],
-      },
-    ],
-  },
-  // Zainthar Kai Flavor
-  "Khaine's Essence": {
-    effects: [
-      {
-        name: `Khaine's Essence`,
-        desc: `Each time a model in a friendly ZAINTHAR KAI MELUSAI unit is slain, that model can fight before it is removed from play.`,
-        when: [WOUND_ALLOCATION_PHASE],
+        when: [START_OF_HERO_PHASE],
       },
     ],
   },

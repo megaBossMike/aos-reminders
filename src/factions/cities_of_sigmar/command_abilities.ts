@@ -31,8 +31,9 @@ const CommandAbilities = {
     effects: [
       {
         name: `Hold the Line`,
-        desc: `Pick up to 3 friendly FREEGUILD units wholly within 18" of a friendly FREEGUILD HERO with this command ability. Until the start of your next hero phase, add 1 to hit and wound rolls for attacks made by those friendly units if they have not made a normal move or a charge move in the same turn. A unit cannot benefit from this command ability more than once per phase.`,
+        desc: `You can use this command ability in your hero phase. If you do so, pick up to 3 friendly FREEGUILD units wholly within 18" of a friendly FREEGUILD HERO with this command ability. Until the start of your next hero phase, add 1 to hit rolls and wound rolls for attacks made by those units if they did not make a normal move, run, retreat or make a charge move in the same turn. A unit cannot benefit from this command ability more than once per phase.`,
         when: [HERO_PHASE],
+        rule_sources: [rule_sources.BATTLETOME_CITIES_OF_SIGMAR, rule_sources.ERRATA_DECEMBER_2022],
       },
     ],
   },
@@ -158,8 +159,13 @@ const CommandAbilities = {
     effects: [
       {
         name: `Strike then Melt Away`,
-        desc: `Pick 1 friendly LIVING CITY unit that shot in that phase, is more than 9" from any enemy units and is wholly within 18" of af riendly LIVING CITY HERO. That unit can make a normal move (it cannot run). A unit cannot benefit from this command ability more than once per phase.`,
+        desc: `You can use this command ability at the end of your shooting phase. If you do so, pick 1 friendly Living City unit that shot in that phase, is more than 9" from any enemy units and is wholly within 18" of a friendly Living City Hero. That unit can make a normal move (it cannot run), but it cannot finish that move within 9" of any enemy units. A unit cannot benefit from this command ability more than once per phase.`,
         when: [END_OF_SHOOTING_PHASE],
+        rule_sources: [
+          rule_sources.BATTLETOME_CITIES_OF_SIGMAR,
+          rule_sources.ERRATA_JULY_2022,
+          meta_rule_sources.BATTLESCROLL_ANDTOR_SEPTEMBER_2023,
+        ],
       },
     ],
   },

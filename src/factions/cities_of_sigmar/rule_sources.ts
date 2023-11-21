@@ -13,6 +13,21 @@ const rule_sources = {
     type: 'errata',
     url: 'https://www.warhammer-community.com/wp-content/uploads/2019/10/8SU1a4z2WF3NkVCk.pdf',
   },
+  ERRATA_JULY_2022: {
+    name: 'Errata (July 2022)',
+    type: 'errata',
+    url: 'https://www.warhammer-community.com/wp-content/uploads/2019/10/OGOJxSXwXA2ArN7d.pdf',
+  },
+  ERRATA_OCTOBER_2022: {
+    name: 'Errata (October 2022)',
+    type: 'errata',
+    url: 'https://www.warhammer-community.com/wp-content/uploads/2019/10/9ZnJjc7zaC674ZaY.pdf',
+  },
+  ERRATA_DECEMBER_2022: {
+    name: 'Errata (December 2022)',
+    type: 'errata',
+    url: 'https://www.warhammer-community.com/wp-content/uploads/2023/01/8IYkHzgINhIUYSd7.pdf',
+  },
 }
 
 export default rule_sources

@@ -1,24 +1,12 @@
 import { tagAs } from 'factions/metatagger'
-import meta_rule_sources from 'meta/rule_sources'
-import {
-  BATTLESHOCK_PHASE,
-  CHARGE_PHASE,
-  COMBAT_PHASE,
-  DURING_GAME,
-  HERO_PHASE,
-  MOVEMENT_PHASE,
-  SAVES_PHASE,
-  SHOOTING_PHASE,
-} from 'types/phases'
-import rule_sources from './rule_sources'
+import { HERO_PHASE } from 'types/phases'
 
 const Spells = {
-  // Lore of Slaanesh - Daemons Only
   'Lash of Slaanesh': {
     effects: [
       {
         name: `Lash of Slaanesh`,
-        desc: `Casting value of 5. Pick 1 point on the battlefield within 12" of the caster that is visible to them and draw an imaginary straight line (1 mm wide). This line goes between that point and the closest part of the casters base. Roll a D6 for each enemy model passed across by this line. On a 4+ that model's unit suffers 1 mortal wound.`,
+        desc: `Casting value of 6 and a range of 12". Pick 1 enemy unit within range and visible to the caster, and roll number of dice equal to the number of models in that unit. For each 5+, subtract 1 from the Attacks characteristic of that unit's melee weapons (to a minimum of 1) until your next hero phase.`,
         when: [HERO_PHASE],
       },
     ],
@@ -27,7 +15,7 @@ const Spells = {
     effects: [
       {
         name: `Pavane of Slaanesh`,
-        desc: `Casting value of 7. Pick 1 enemy hero within 6" of the caster that is visible. Roll a number of dice equal to that heros move characteristic. For each 5+ that hero suffers 1 mortal wound.`,
+        desc: `Casting value of 6 and a range of 12". Pick 1 enemy unit within range and visible to the caster, and roll a number of dice equal to that unit's Move characteristic. For each 5+, subtract 1" from that unit's Move characteristic (to a minimum of 1") for the rest of the battle. Ihe same unit cannot be affected by this ability more than once per battle.`,
         when: [HERO_PHASE],
       },
     ],
@@ -36,7 +24,7 @@ const Spells = {
     effects: [
       {
         name: `Hysterical Frenzy`,
-        desc: `Casting value of 7. Pick 1 enemy unit wholly within 18" of the caster and visible. Roll 1 dice for each model in that unit. For each 6, that unit suffers D3 mortal wounds.`,
+        desc: `Casting value of 7 and a range of 18". Pick 1 enemy unit within range and visible to the caster, and roll a number of dice equal to that unit's Bravery characteristic. For each 6, that unit suffers D3 mortal wounds.`,
         when: [HERO_PHASE],
       },
     ],
@@ -45,7 +33,7 @@ const Spells = {
     effects: [
       {
         name: `Soulslice Shards`,
-        desc: `Casting value of 5. Pick 1 enemy unit within 18" of the cast and visible. Roll 2D6 and if the roll is higher than the units bravery characteristic that, unit suffers a number of mortal wounds equal to the difference.`,
+        desc: `Casting value of 5 and a range of 12. Pick 1 enemy unit within range and visible to the caster, and roll 2D6. If the roll is greater than that unit's Bravery characteristic, that unit cannot issue or receive commands until your next hero phase.`,
         when: [HERO_PHASE],
       },
     ],
@@ -54,13 +42,8 @@ const Spells = {
     effects: [
       {
         name: `Phantasmagoria`,
-        desc: `Casting value of 7. Pick 1 enemy unit within 18" of the caster that is visible. Roll 6 dice and for each 5+ until your next hero phase subtract 1 from that unit's bravery characteristic (to a minimum of 1) until your next hero phase.`,
+        desc: `Casting value of 5 and a range of 12". Pick 1 enemy unit within range and visible to the caster. Until your next hero phase, each time that unit is picked to fight, roll a dice. On a 3+, you can pick 1 friendly Hedonites of Slaanesh unit within 3" of that unit. That friendly unit can retreat before that enemy unit piles in.`,
         when: [HERO_PHASE],
-      },
-      {
-        name: `Phantasmagoria`,
-        desc: `If active, subtract 1 from that unit's bravery characteristic (to a minimum of 1).`,
-        when: [BATTLESHOCK_PHASE],
       },
     ],
   },
@@ -68,23 +51,17 @@ const Spells = {
     effects: [
       {
         name: `Born of Damnation`,
-        desc: `Casting value of 4. Pick 1 friendly Hedonite hero within 6" of the caster that is visible. You can heal D3 wounds allocated to that hero.`,
+        desc: `Casting value of 6. If successfully cast, roll 6 dice. For each 4+, you receive 1 depravity point.`,
         when: [HERO_PHASE],
       },
     ],
   },
-  // Forbidden Sorceries of Slaanesh - Greater Daemons Only
   'Paths of the Dark Prince': {
     effects: [
       {
         name: `Paths of the Dark Prince`,
-        desc: `Casting value of 7. Until your next hero phase the caster can fly.`,
+        desc: `Casting value of 5. If successfully cast, roll 3D6 instead of 2D6 when making a charge roll for the caster until your next hero phase.`,
         when: [HERO_PHASE],
-      },
-      {
-        name: `Paths of the Dark Prince`,
-        desc: `If active, the buffed unit can fly.`,
-        when: [MOVEMENT_PHASE],
       },
     ],
   },
@@ -92,7 +69,7 @@ const Spells = {
     effects: [
       {
         name: `Progeny of Damnation`,
-        desc: `Casting value of 5. Pick 1 friendly Daemon Hedonite hero within 6" of the caster that is visible to them. You can heal D3 wounds allocated to that hero. If the casting roll was 10+ you can heal D6 wounds allocated instead.`,
+        desc: `Casting value of 5 and a range of 12". Pick 1 friendly HEDONITES OF SLAANESH unit wholly within range and visible to the caster. Until your next hero phase, if that unit finishes a normal move, run or retreat within 9" of any enemy units, those units cannot receive the Redeploy command.`,
         when: [HERO_PHASE],
       },
     ],
@@ -101,59 +78,8 @@ const Spells = {
     effects: [
       {
         name: `Slothful Stupor`,
-        desc: `Casting value of 7. Pick 1 enemy hero within 12" of the caster that is visble. Until your next hero phase, that HERO cannot issue or receive commands and cannot run or attempt a charge.`,
+        desc: `Casting value of 7 and a range of 12". Pick 1 enemy unit within range and visible to the caster. Until your next hero phase, the Move characteristic of that unit is 3" and all run rolls and charge rolls for that unit are treated as being 3.`,
         when: [HERO_PHASE],
-        rule_sources: [rule_sources.BATTLETOME_SLAANESH, rule_sources.ERRATA_JULY_2021],
-      },
-      {
-        name: `Slothful Stupor`,
-        desc: `If active, until your next hero phase, that HERO cannot issue or receive commands.`,
-        when: [DURING_GAME],
-        rule_sources: [rule_sources.BATTLETOME_SLAANESH, rule_sources.ERRATA_JULY_2021],
-      },
-      {
-        name: `Slothful Stupor`,
-        desc: `If active, until your next hero phase, that HERO cannot run or attempt a charge.`,
-        when: [MOVEMENT_PHASE, CHARGE_PHASE],
-        rule_sources: [rule_sources.BATTLETOME_SLAANESH, rule_sources.ERRATA_JULY_2021],
-      },
-    ],
-  },
-  // Lore of Pain and Pleasure - Mortals Only
-  'Battle Rapture': {
-    effects: [
-      {
-        name: `Battle Rapture`,
-        desc: `Casting value of 5. Pick 1 friendly mortal Slaanesh unit wholly within 18" of the caster and visible. Do not take battleshock tests for that unit until your next hero phase. If the casting roll is a 10+, you can pick 3 visible units instead.`,
-        when: [HERO_PHASE],
-      },
-      {
-        name: `Battle Rapture`,
-        desc: `If active, do not take battleshock tests for the buffed unit.`,
-        when: [BATTLESHOCK_PHASE],
-      },
-    ],
-  },
-  'Judgement of Excess': {
-    effects: [
-      {
-        name: `Judgement of Excess`,
-        desc: `Casting value of 5. Pick 1 enemy unit within 12" of the caster and visible. The target suffers 1 mortal wound for every 5 models in the unit (minimum 1 wound inflicted).`,
-        when: [HERO_PHASE],
-      },
-    ],
-  },
-  'Dark Delusions': {
-    effects: [
-      {
-        name: `Dark Delusions`,
-        desc: `Casting value of 4. Pick 1 enemy unit wholly within 18" of the caster and visible. Roll 2D6 and if the roll is equal to or greater than that unit's bravery characteristic, add 1 to the hit rolls for attacks that target that unit until your next hero phase.`,
-        when: [HERO_PHASE],
-      },
-      {
-        name: `Dark Delusions`,
-        desc: `If active, add 1 to the hit rolls for attacks against the debuffed unit.`,
-        when: [SHOOTING_PHASE, COMBAT_PHASE],
       },
     ],
   },
@@ -161,7 +87,7 @@ const Spells = {
     effects: [
       {
         name: `Cacophonic Choir`,
-        desc: `Casting value of 6. Roll 2D6. Each enemy unit within 6" of the caster that has a bravery characteristic of less than the roll suffers D3 mortal wounds.`,
+        desc: `Casting value of 6 and a range of 6". If successfully cast, roll 2D6. Each enemy unit within range that has a Bravery characteristic of less than the roll suffers D3 mortal wounds (roll separately for each unit).`,
         when: [HERO_PHASE],
       },
     ],
@@ -170,13 +96,8 @@ const Spells = {
     effects: [
       {
         name: `Acquiescence`,
-        desc: `Casting value of 5. You can pick 1 enemy unit within 18" of the caster that is visible to them. You can reroll hit rolls of 1 for attacks that target that unit until your next hero phase.`,
+        desc: `Casting value of 5 and a range of 18". Pick 1 enemy unit within range and visible to the caster. Add 1 to wound rolls for attacks that target that unit until your next hero phase.`,
         when: [HERO_PHASE],
-      },
-      {
-        name: `Acquiescence`,
-        desc: `If active, you can reroll hit rolls of 1 for attacks that target the debuffed unit.`,
-        when: [SHOOTING_PHASE, COMBAT_PHASE],
       },
     ],
   },
@@ -184,15 +105,8 @@ const Spells = {
     effects: [
       {
         name: `Subvert`,
-        desc: `Casting value of 7. You can pick 1 enemy hero within 18" of the caster that is visible to them. Until your next hero phase, that HERO cannot issue or receive commands.`,
+        desc: `Casting value of 7 and a range of 18". Pick 1 enemy unit within range and visible to the caster. That unit cannot issue or receive commands until your next hero phase.`,
         when: [HERO_PHASE],
-        rule_sources: [rule_sources.BATTLETOME_SLAANESH, rule_sources.ERRATA_JULY_2021],
-      },
-      {
-        name: `Subvert`,
-        desc: `If active, until your next hero phase, that HERO cannot issue or receive commands.`,
-        when: [DURING_GAME],
-        rule_sources: [rule_sources.BATTLETOME_SLAANESH, rule_sources.ERRATA_JULY_2021],
       },
     ],
   },
@@ -200,21 +114,8 @@ const Spells = {
     effects: [
       {
         name: `Refine Senses`,
-        desc: `Casting value of 4. If successfully cast, until your next hero phase, you can add 1 to hit rolls for attacks made by the caster that target a HERO, and you can add 1 to save rolls for attacks made by Heroes that target the caster.`,
+        desc: `Casting value of 4. If successfully cast, until your next hero phase, add 1 to hit rolls and wound rolls for attacks made by the caster that target an enemy Hero and add 1 to save rolls for attacks made by enemy Heroes that target the caster.`,
         when: [HERO_PHASE],
-        rule_sources: [rule_sources.BATTLETOME_SLAANESH, rule_sources.ERRATA_JULY_2021],
-      },
-      {
-        name: `Refine Senses`,
-        desc: `If active, you can add 1 to hit rolls for attacks made by the caster that target a HERO.`,
-        when: [SHOOTING_PHASE, COMBAT_PHASE],
-        rule_sources: [rule_sources.BATTLETOME_SLAANESH, rule_sources.ERRATA_JULY_2021],
-      },
-      {
-        name: `Refine Senses`,
-        desc: `If active, you can add 1 to save rolls for attacks made by Heroes that target the caster.`,
-        when: [SAVES_PHASE],
-        rule_sources: [rule_sources.BATTLETOME_SLAANESH, rule_sources.ERRATA_JULY_2021],
       },
     ],
   },
@@ -222,13 +123,8 @@ const Spells = {
     effects: [
       {
         name: `Overwhelming Acquiescence`,
-        desc: `Casting value of 7. You can pick up to D3 enemy units within 24" of the caster that are visible to them. You can reroll hit rolls of 1 for attacks that target those units until your next hero phase.`,
+        desc: `Casting value of 6 and a range of 24". Pick up to D3 different enemy units within range and visible to the caster. Add 1 to wound rolls for attacks that target those units until your next hero phase.`,
         when: [HERO_PHASE],
-      },
-      {
-        name: `Overwhelming Acquiescence`,
-        desc: `If active, you can reroll hit rolls of 1 for attacks that target the debuffed unit.`,
-        when: [SHOOTING_PHASE, COMBAT_PHASE],
       },
     ],
   },
@@ -236,13 +132,8 @@ const Spells = {
     effects: [
       {
         name: `Crippling Famishment`,
-        desc: `Casting value of 7. You can pick up to 1 enemy unit within 18" of the caster that are visible to them. Until your next hero phase, halve the moves, runs, and charges for that unit.`,
+        desc: `Casting value of 7 and a range of 18". Pick 1 enemy unit within range and visible to the caster. Until your next hero phase, halve the Move characteristic of that unit, and halve run rolls and charge rolls for that unit.`,
         when: [HERO_PHASE],
-      },
-      {
-        name: `Crippling Famishment`,
-        desc: `If active, halve the moves, runs, and charges for the debuffed unit.`,
-        when: [MOVEMENT_PHASE, CHARGE_PHASE],
       },
     ],
   },
@@ -250,13 +141,8 @@ const Spells = {
     effects: [
       {
         name: `Reflection Eternal`,
-        desc: `Casting value of 6. You can pick up to 1 enemy unit within 12" of the caster that are visible to them. Subtract 1 from the target's wound rolls in the following combat phase.`,
+        desc: `Casting value of 6 and a range of 12". Pick 1 enemy unit within range and visible to the caster. Subtract 1 from the Attacks characteristic of that unit's melee weapons (to a minimum of 1) until your next hero phase.`,
         when: [HERO_PHASE],
-      },
-      {
-        name: `Reflection Eternal`,
-        desc: `If active, subtract 1 from the debuffed unit's wound rolls in this phase.`,
-        when: [COMBAT_PHASE],
       },
     ],
   },
@@ -264,15 +150,8 @@ const Spells = {
     effects: [
       {
         name: `Whispers of Doubt`,
-        desc: `Casting value of 6. You can pick 1 enemy hero within 3" of the caster that is visible to them. Roll 3D6 and if the roll is greater than the target's bravery characteristic, add 1 to hit rolls that target that hero until your next hero phase.`,
+        desc: `Casting value of 6. Pick 1 enemy Hero visible to the caster and roll 3D6. If the roll is equal to or greater than that Hero's Bravery characteristic, add 1 to hit rolls and wound rolls for attacks that target that Hero until your next hero phase.`,
         when: [HERO_PHASE],
-        rule_sources: [meta_rule_sources.BOOK_BROKEN_REALMS_KRAGNOS],
-      },
-      {
-        name: `Whispers of Doubt`,
-        desc: `If active, add 1 to hit rolls that target the debuffed hero.`,
-        when: [SHOOTING_PHASE, COMBAT_PHASE],
-        rule_sources: [meta_rule_sources.BOOK_BROKEN_REALMS_KRAGNOS],
       },
     ],
   },

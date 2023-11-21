@@ -3,7 +3,7 @@ import { useTheme } from 'context/useTheme'
 
 const AppBanner = () => {
   const { isDark } = useTheme()
-  const name = 'aos-3-ghb-skaven-sylvaneth-2022-release'
+  const name = '2023-sept-tactics-of-andtor'
 
   return (
     <NotificationBanner
@@ -14,8 +14,7 @@ const AppBanner = () => {
       variant={isDark ? `info` : `info`}
     >
       <span>
-        <strong>NEW: </strong>General's Handbook (2022) has been added, as well as the new Sylvaneth and
-        Skaven battletomes!
+        <strong>NEW: </strong> Battlescroll: Tactics of Andtor (Sept 2023) is live!
       </span>
     </NotificationBanner>
   )

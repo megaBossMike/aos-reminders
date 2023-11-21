@@ -8,6 +8,7 @@ import CommandTraits from './command_traits'
 import EndlessSpells from './endless_spells'
 import Flavors from './flavors'
 import GrandStrategies from './grand_strategies'
+import Scenery from './scenery'
 import Spells from './spells'
 import Units from './units'
 
@@ -23,47 +24,30 @@ const baseSubFaction: IItemDescription = {
     endless_spells: [EndlessSpells],
     flavors: [Flavors],
     grand_strategies: [GrandStrategies],
+    scenery: [Scenery],
     spells: [Spells],
     units: [Units],
   },
   effects: [],
 }
+
 const subFactions = {
   'The Burgeoning': {
-    effects: pickEffects(BattleTraits, ['The Burgeoning', 'Battle Tactics']),
-    available: {
-      ...baseSubFaction.available,
-    },
-    mandatory: {
-      ...baseSubFaction.mandatory,
-    },
+    ...baseSubFaction,
+    effects: pickEffects(BattleTraits, ['The Burgeoning']),
   },
   'The Reaping': {
-    effects: pickEffects(BattleTraits, ['The Reaping', 'Battle Tactics']),
-    available: {
-      ...baseSubFaction.available,
-    },
-    mandatory: {
-      ...baseSubFaction.mandatory,
-    },
+    ...baseSubFaction,
+    effects: pickEffects(BattleTraits, ['The Reaping']),
   },
   'The Dwindling': {
-    effects: pickEffects(BattleTraits, ['The Dwindling', 'Battle Tactics']),
-    available: {
-      ...baseSubFaction.available,
-    },
-    mandatory: {
-      ...baseSubFaction.mandatory,
-    },
+    ...baseSubFaction,
+    effects: pickEffects(BattleTraits, ['The Dwindling']),
   },
   Everdusk: {
-    effects: pickEffects(BattleTraits, ['Everdusk', 'Battle Tactics']),
-    available: {
-      ...baseSubFaction.available,
-    },
-    mandatory: {
-      ...baseSubFaction.mandatory,
-    },
+    ...baseSubFaction,
+    effects: pickEffects(BattleTraits, ['Everdusk']),
   },
 }
+
 export default subFactions

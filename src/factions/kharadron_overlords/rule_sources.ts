@@ -22,6 +22,26 @@ const rule_sources = {
     name: 'White Dwarf (May 2022)',
     type: 'white_dwarf',
   },
+  ERRATA_JULY_2022: {
+    name: 'Errata (July 2022)',
+    type: 'errata',
+    url: 'https://www.warhammer-community.com/wp-content/uploads/2018/06/yZSgwuU45O72wNtB.pdf',
+  },
+  ERRATA_OCTOBER_2022: {
+    name: 'Errata (October 2022)',
+    type: 'errata',
+    url: 'https://www.warhammer-community.com/wp-content/uploads/2018/06/L1l9ZHIAyq7tBRbT.pdf',
+  },
+  ERRATA_JANUARY_2023: {
+    name: 'Errata (January 2023)',
+    type: 'errata',
+    url: 'https://www.warhammer-community.com/wp-content/uploads/2018/06/X56aKSIwkch6qyi9.pdf',
+  },
+  ERRATA_MARCH_2023: {
+    name: 'Errata (March 2023)',
+    type: 'errata',
+    url: 'https://www.warhammer-community.com/wp-content/uploads/2023/03/ww7V9OeWxIUgjNtI.pdf',
+  },
 }
 
 export default rule_sources

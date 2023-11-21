@@ -27,8 +27,23 @@ import {
 } from 'types/phases'
 import command_abilities from './command_abilities'
 import prayers from './prayers'
+import rule_sources from './rule_sources'
 import spells from './spells'
 
+const HiddenWeaponsTeamsEffects = [
+  {
+    name: `Hidden Weapon Team`,
+    desc: `When you select this unit to be part of your army, you can pick 1 friendly Clanrats or Stormvermin unit that has 10 or more models and is already part of your army to be the unit in which this unit is hiding. Record this information on a separate piece of paper. Do not set up this unit until it is revealed as described next. You can hide up to 1 unit in a Clanrats or Stormvermin unit for every 10 models in that Clanrats or Stormvermin unit. Hidden units are destroyed if the unit in which they are hiding is destroyed before they are revealed.`,
+    when: [START_OF_SETUP],
+    shared: true,
+  },
+  {
+    name: `Hidden Weapon Team`,
+    desc: `At the start of your shooting phase, you can reveal this hidden unit. If you do so, set up this unit wholly within 3" of the unit in which it was hiding and more than 3" from all enemy units. This unit can shoot in the phase in which it is revealed as long as the unit in which it was hiding did not run in the same turn (it could have retreated).`,
+    when: [START_OF_SHOOTING_PHASE],
+    shared: true,
+  },
+]
 const EshinToxinsEffect = {
   name: `Eshin Toxins`,
   desc: `If the unmodified hit roll for an attack made by this unit is 6, the target suffers D3 mortal wounds and the attack sequence ends (do not make a wound roll or save roll).`,
@@ -59,12 +74,6 @@ const RegeneratingMonstrosityEffect = {
   name: `Regenerating Monstrosity`,
   desc: `In your hero phase, you can heal up to D3 wounds allocated to this unit.`,
   when: [HERO_PHASE],
-  shared: true,
-}
-const PushedIntoBattleEffect = {
-  name: `Pushed into Battle`,
-  desc: `This unit cannot move unless it starts the move within 6" of 10 or more other friendly Skaven models.`,
-  when: [MOVEMENT_PHASE],
   shared: true,
 }
 const ProtectionOfTheHornedRatEffect = {
@@ -102,7 +111,7 @@ const Units = {
       ProtectionOfTheHornedRatEffect,
       {
         name: `Power Behind the Throne`,
-        desc: `Once per battle round, this unit can issue the same command up to 2 times in the same phase. If it does so, each command must be received by a friendly Skaven unit. No command point is spent the second time this unit issues that command in that phase.`,
+        desc: `Once per battle round, this unit can issue the same command up to 2 times in the same phase. If it does so, each command must be received by a friendly SKAVEN unit. No command point is spent the second time this unit issues that command in that phase.`,
         when: [DURING_ROUND],
       },
       {
@@ -172,12 +181,12 @@ const Units = {
       ProtectionOfTheHornedRatEffect,
       {
         name: `Forth-forth, Children of the Horned Rat!`,
-        desc: `Friendly Skaven units wholly within 13" of this unit have a Bravery characteristic of 10.`,
+        desc: `Friendly SKAVEN units wholly within 13" of this unit have a Bravery characteristic of 10.`,
         when: [BATTLESHOCK_PHASE],
       },
       {
         name: `The Great Manipulators`,
-        desc: `This unit counts as 2 Masterclan Heroes for the purposes of the Always Three Clawsteps Ahead battle trait.`,
+        desc: `This unit counts as 2 MASTERCLAN HEROES for the purposes of the Always Three Clawsteps Ahead battle trait.`,
         when: [DURING_GAME],
       },
       {
@@ -200,7 +209,7 @@ const Units = {
       GenericEffects.WizardTwoSpellsEffect,
       {
         name: `Warpstone Tokens`,
-        desc: `Once per turn, in your hero phase, when this unit attempts to cast a spell, you can say that it will first consume a warpstone token. If you do so, roll 3D6. This roll cannot be rerolled or modified. If the 3D6 roll is 13, the spell is successfully cast and cannot be unbound; however, after the effects of the spell have been resolved, this unit suffers D3 mortal wounds that cannot be negated. Ifthe 3D6 roll was not 13, remove 1 dice of your choice and use the remaining 2D6 as the casting roll.`,
+        desc: `Once per turn, in your hero phase, when this unit attempts to cast a spell, you can say that it will first consume a warpstone token. If you do so, roll 3D6. This roll cannot be rerolled or modified. If the 3D6 roll is 13, the spell is successfully cast and cannot be unbound; however, after the effects of the spell have been resolved, this unit suffers D3 mortal wounds that cannot be negated. If the 3D6 roll was not 13, remove 1 dice of your choice and use the remaining 2D6 as the casting roll.`,
         when: [HERO_PHASE],
       },
     ],
@@ -230,9 +239,10 @@ const Units = {
     effects: [
       GenericEffects.WizardOneSpellEffect,
       {
-        name: `More-more Warp-energy!`,
-        desc: `Before you make a hit roll for an attack made with a Warp-energy Blade, you can say that the engineer has overloaded its generator. If you do so, until the end of that phase, the Attacks characteristic of that weapon is D6 instead of D3. However, for each unmodified hit roll of 1, this unit suffers D3 mortal wounds after all of its attacks have been resolved.`,
+        name: `More-more Warp Energy!`,
+        desc: `Before you determine the number of attacks made with a Warp-energy Blade, you can say that the engineer has overloaded its generator. If you do so, until the end of that phase, the Attacks characteristic of that weapon is D6 instead of D3. However, for each unmodified hit roll of 1, this unit suffers D3 mortal wounds after all of its attacks have been resolved.`,
         when: [COMBAT_PHASE],
+        rule_sources: [rule_sources.BATTLETOME_SKAVEN, rule_sources.ERRATA_JANUARY_2023],
       },
     ],
   },
@@ -244,8 +254,9 @@ const Units = {
       GenericEffects.WizardOneSpellEffect,
       {
         name: `More-more Doomrocket!`,
-        desc: `Before you make a hit roll for an attack made with a Doomrocket, you can say that the engineer has overloaded its warhead. If you do so, until the end of that phase, the Attacks characteristic of that weapon is D6 instead of D3. However, for each unmodified hit roll of 1, this unit suffers D3 mortal wounds after all of its attacks have been resolved.`,
+        desc: `Before you determine the number of attacks made with a Doomrocket, you can say that the engineer has overloaded its warhead. If you do so, until the end of that phase, the Attacks characteristic of that weapon is D6 instead of D3. However, for each unmodified hit roll of 1, this unit suffers D3 mortal wounds after all of its attacks have been resolved.`,
         when: [SHOOTING_PHASE],
+        rule_sources: [rule_sources.BATTLETOME_SKAVEN, rule_sources.ERRATA_JANUARY_2023],
       },
     ],
   },
@@ -321,7 +332,7 @@ const Units = {
     effects: [
       {
         name: `Rolling Doom`,
-        desc: `When this unit moves, it can pass across models with a Wounds characteristic of 3 or less in the same manner as a unit that can fly. In addition, after this unit has moved, roll a dice for each unit that has any models it passed across and for each other unit within 1 " of this unit at the end of the move. On a 2+, that unit suffers D3 mortal wounds.`,
+        desc: `When this unit moves, it can pass across models with a Wounds characteristic of 3 or less in the same manner as a unit that can fly. In addition, after this unit has moved, roll a dice for each unit that has any models it passed across and for each other unit within 1" of this unit at the end of the move. On a 2+, that unit suffers D3 mortal wounds.`,
         when: [MOVEMENT_PHASE],
       },
       {
@@ -398,7 +409,7 @@ const Units = {
       },
       {
         name: `Elite Bodyguards`,
-        desc: `If a friendly Skaven Hero is within 3" of this unit, before you allocate a wound or mortal wound to that Hero, or instead of making a ward roll for a wound or mortal wound that would be allocated to that Hero, roll a dice. Add 2 to the roll if the Hero has the Clans Verminus keyword. On a 4+, that wound or mortal wound is allocated to this unit instead of that Hero and cannot be negated.`,
+        desc: `If a friendly SKAVEN HERO is within 3" of this unit, before you allocate a wound or mortal wound to that HERO, or instead of making a ward roll for a wound or mortal wound that would be allocated to that HERO, roll a dice. Add 2 to the roll if the HERO has the Clans Verminus keyword. On a 4+, that wound or mortal wound is allocated to this unit instead of that HERO and cannot be negated.`,
         when: [WOUND_ALLOCATION_PHASE],
       },
     ],
@@ -432,7 +443,7 @@ const Units = {
       ProtectionOfTheHornedRatEffect,
       {
         name: `Amidst the Seething Tide`,
-        desc: `You can reroll wound rolls for attacks made by this unit while it is within 13" of 3 or more friendly Skaven units.`,
+        desc: `You can reroll wound rolls for attacks made by this unit while it is within 13" of 3 or more friendly SKAVEN units.`,
         when: [SHOOTING_PHASE, COMBAT_PHASE],
       },
       {
@@ -524,16 +535,7 @@ const Units = {
         desc: `Before you determine the Attacks characteristic of a Ratling Gun, you can say that the crew are releasing its gimbal-limiter. If you do so, the Attacks characteristic for that attack is 4D6+3 instead of 2D6+3. However, if the roll includes any doubles, this unit is destroyed after all of its attacks have been resolved.`,
         when: [SHOOTING_PHASE],
       },
-      {
-        name: `Hidden Weapon Team`,
-        desc: `When you select this unit to be part of your army, you can pick 1 friendly Clanrats or Stormvermin unit that has 10 or more models and is already part of your army to be the unit in which this unit is hiding. Record this information on a separate piece of paper. Do not set up this unit until it is revealed as described next. You can hide up to 1 Ratling Gun unit in a Clanrats or Stormvermin unit for every 10 models in that Clanrats or Stormvermin unit. Hidden Ratling Gun units are destroyed if the unit in which they are hiding is destroyed before they are revealed.`,
-        when: [START_OF_SETUP],
-      },
-      {
-        name: `Hidden Weapon Team`,
-        desc: `At the start of your shooting phase, you can reveal this hidden unit. If you do so, set up this unit wholly within 3" of the unit in which it was hiding and more than 3" from all enemy units. This unit can shoot in the phase in which it is revealed as long as the unit in which it was hiding did not run in the same turn (it could have retreated).`,
-        when: [START_OF_SHOOTING_PHASE],
-      },
+      ...HiddenWeaponsTeamsEffects,
     ],
   },
   'Warpfire Thrower': {
@@ -548,28 +550,19 @@ const Units = {
         desc: `Before you pick the target for an attack made with a Warpfire Thrower, you can say that the crew are disabling the flow regulator. If you do so, increase the Range characteristic to 12" for that attack and add 1 to the roll that determines if an enemy model suffers 1 mortal wound. However, for each unmodified 1, this unit suffers 1 mortal wound after all of its attacks have been resolved.`,
         when: [SHOOTING_PHASE],
       },
-      {
-        name: `Hidden Weapon Team`,
-        desc: `When you select this unit to be part of your army, you can pick 1 friendly Clanrats or Stormvermin unit that has 10 or more models and is already part of your army to be the unit in which this unit is hiding. Record this information on a separate piece of paper. Do not set up this unit until it is revealed as described next. You can hide up to 1 Warpfire Thrower unit in a Clanrats or Stormvermin unit for every 10 models in that Clanrats or Stormvermin unit. Hidden Warpfire Thrower units are destroyed if the unit in which they are hiding is destroyed before they are revealed.`,
-        when: [START_OF_SETUP],
-      },
-      {
-        name: `Hidden Weapon Team`,
-        desc: `At the start of your shooting phase, you can reveal this hidden unit. If you do so, set up this unit wholly within 3" of the unit in which it was hiding and more than 3" from all enemy units. This unit can shoot in the phase in which it is revealed as long as the unit in which it was hiding did not run in the same turn (it could have retreated).`,
-        when: [START_OF_SHOOTING_PHASE],
-      },
+      ...HiddenWeaponsTeamsEffects,
     ],
   },
   'Warp-Grinder': {
     effects: [
       {
         name: `Tunnel Skulkers`,
-        desc: `During deployment, instead of setting up this unit on the battlefield, you can place it to one side and say that it is set up tunnelling as a reserve unit. If you do so, when you would set up another friendly Skaven unit that is not a Monster or a War Machine during deployment, you can say that it will join this unit tunnelling as a reserve unit. 1 unit can join this unit in this way.`,
+        desc: `During deployment, instead of setting up this unit on the battlefield, you can place it to one side and say that it is set up tunnelling as a reserve unit. If you do so, when you would set up another friendly SKAVEN unit that is not a MONSTER or a War Machine during deployment, you can say that it will join this unit tunnelling as a reserve unit. 1 unit can join this unit in this way.`,
         when: [DURING_SETUP],
       },
       {
         name: `Tunnel Skulkers`,
-        desc: `At the end of your movement phase, you can set up this unit on the battlefield more than 9" from all enemy units. Then, if a friendly Skaven unit joined this unit in reserve, set up that unit on the battlefield, wholly within 13" of this unit and more than 9" from all enemy units.`,
+        desc: `At the end of your movement phase, you can set up this unit on the battlefield more than 9" from all enemy units. Then, if a friendly SKAVEN unit joined this unit in reserve, set up that unit on the battlefield, wholly within 13" of this unit and more than 9" from all enemy units.`,
         when: [END_OF_MOVEMENT_PHASE],
       },
     ],
@@ -642,7 +635,6 @@ const Units = {
       prayers: [keyPicker(prayers, ['Pestilence-pestilence!'])],
     },
     effects: [
-      PushedIntoBattleEffect,
       ...AltarOfTheHornedRatEffects,
       {
         name: `Great Plague Censer`,
@@ -684,12 +676,11 @@ const Units = {
         desc: `Add the Avalanche of Energy value on this unit's damage table to casting and chanting rolls for this unit.`,
         when: [HERO_PHASE],
       },
-      PushedIntoBattleEffect,
       {
         name: `A Stirring Beyond the Veil`,
         desc: `Once per battle, at the start of your hero phase, if 7 or more wounds are allocated to this unit, you can say that the Grey Seer will shatter the Screaming Bell. If you do so, roll a dice. On a 1, this unit is destroyed. On any other roll, add the number of wounds allocated to this unit to the roll.
 
-        Ifthe modified roll is 12 or less, the Screaming Bell is shattered see below). If the modified roll is 13 or more, the Screaming Bell is shattered and you can summon 1 Verminlord to the battlefield and add it to your army. The Verminlord must be set up wholly within 13" of this unit. It can be set up within 3" of an enemy unit if this unit is within 3" of that enemy unit, otherwise it must be set up more than 9" from all enemy units. If this unit's Screaming Bell is shattered, it can no longer attempt to cast Cracks Call and it can no longer use its Peal of Doom ability`,
+        If the modified roll is 12 or less, the Screaming Bell is shattered see below). If the modified roll is 13 or more, the Screaming Bell is shattered and you can summon 1 Verminlord to the battlefield and add it to your army. The Verminlord must be set up wholly within 13" of this unit. It can be set up within 3" of an enemy unit if this unit is within 3" of that enemy unit, otherwise it must be set up more than 9" from all enemy units. If this unit's Screaming Bell is shattered, it can no longer attempt to cast Cracks Call and it can no longer use its Peal of Doom ability`,
         when: [START_OF_HERO_PHASE],
       },
       {

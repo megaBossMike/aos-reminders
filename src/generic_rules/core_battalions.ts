@@ -131,6 +131,65 @@ const CoreBattalions: TEntry[] = [
       },
     ],
   },
+
+  // GHB 2022-23 (Season 2) Battalions
+  {
+    name: 'Galletian Command',
+    effects: [
+      {
+        name: `United in Purpose`,
+        desc: `The Infantry unit in this battalion is the Sworn Bodyguard of the GALLETIAN CHAMPION in this battalion. In the combat phase, when you pick the GALLETIAN CHAMPION in this battalion to fight for the first time in that phase, if the Sworn Bodyguard in this battalion is wholly within 6" of that GALLETIAN CHAMPION and has not yet fought in that phase, the GALLETIAN CHAMPION and the Sworn Bodyguard can fight one after the other in the order of your choice.`,
+        when: [COMBAT_PHASE],
+        rule_sources: [meta_rule_sources.GHB_2022_2023_SEASON_2],
+      },
+    ],
+  },
+  {
+    name: 'Galletian Sharpshooters',
+    effects: [
+      {
+        name: `Focus on Your Mark`,
+        desc: `Attacks made with missile weapons by units in this battalion are not prevented from targeting enemy GALLETIAN CHAMPIONS that are within 1" of any enemy Battleline units (see 'The Key to Victory', pg 12).`,
+        when: [SHOOTING_PHASE],
+        rule_sources: [meta_rule_sources.GHB_2022_2023_SEASON_2],
+      },
+    ],
+  },
+  {
+    name: 'Galletian Veterans',
+    effects: [
+      {
+        name: `The Bonds of Battle`,
+        desc: `When a model in this battalion makes an attack with a melee weapon, you can target an enemy unit within 1/2" of another model from the attacking unit instead of using the weapon's Range characteristic for that attack. If you do so, the attacking model must be within 1/2" of another model from its own unit that is within 1/2" of the target.`,
+        when: [COMBAT_PHASE],
+        rule_sources: [meta_rule_sources.GHB_2022_2023_SEASON_2],
+      },
+    ],
+  },
+
+  // GHB 2023-24
+  {
+    name: 'Andtorian Acolytes',
+    effects: [
+      {
+        name: `Coordinated Augmentation`,
+        desc: `At the start of the hero phase, if there are 2 or more friendly ANDTORIAN LOCUS units in this battalion on the battlefield, roll a dice. On a 3+, you gain 1 primal magic dice.`,
+        when: [START_OF_HERO_PHASE],
+        rule_sources: [meta_rule_sources.GHB_2023_2024],
+      },
+    ],
+  },
+  {
+    name: 'Wizard-finders of Andtor',
+    effects: [
+      {
+        name: `Magic Hunters`,
+        desc: `Each time a unit in this battalion is picked to fight, you can say that it will go on a wizard hunt. If you do so, pick 1 melee weapon profile on that unit's warscroll. Until the end of that phase, add 1 to the Attacks characteristic of that melee weapon, but all of the attacks that unit makes in that phase must target an enemy WIZARD.`,
+        when: [COMBAT_PHASE],
+        rule_sources: [meta_rule_sources.GHB_2023_2024],
+      },
+    ],
+  },
 ]
 
 export default CoreBattalions

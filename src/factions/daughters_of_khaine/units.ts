@@ -19,16 +19,18 @@ import {
 } from 'types/phases'
 import CommandAbilities from './command_abilities'
 import Prayers from './prayers'
+import rule_sources from './rule_sources'
 import Spells from './spells'
 
 const MorathiEffect = {
   name: `One Soul, Two Bodies/ Two Bodies, One Soul`,
-  desc: `If the Shadow Queen is on the battlefield, wounds and mortal wounds that would be allocated to Morathi-Khaine are instead allocated to the Shadow Queen and have no effect on Morathi-Khaine. Wounds and mortal wounds allocated to the Shadow Queen in this way cannot be negated.
+  desc: `If the Shadow Queen is on the battlefield, after making ward rolls for wounds or mortal wounds that would be allocated to this unit, any wounds or mortal wounds that have not been negated are instead allocated to the Shadow Queen and have no effect on this unit. Wounds and mortal wounds allocated to the Shadow Queen in this way cannot be negated.
 
-  In addition, if the Shadow Queen is on the battlefield and the effect of an ability or spell would cause Morathi-Khaine to be destroyed without any wounds being allocated, then Morathi-Khaine is not destroyed and 3 wounds are allocated to the Shadow Queen instead.
+  In addition, if the Shadow Queen is on the battlefield and the effect of an ability or spell would cause this unit to be destroyed without any wounds being allocated, then this unit is not destroyed and 3 wounds are allocated to the Shadow Queen instead. Wounds allocated to the Shadow Queen in this way cannot be negated.
 
-  If the Shadow Queen is destroyed, after removing that unit from play, Morathi-Khaine is also destroyed.`,
+  If the Shadow Queen is destroyed, after removing that unit from play, this unit is also destroyed.`,
   when: [WOUND_ALLOCATION_PHASE],
+  rule_sources: [rule_sources.BATTLETOME_DAUGHTERS_OF_KHAINE, rule_sources.ERRATA_DECEMBER_2022],
   shared: true,
 }
 
@@ -203,7 +205,7 @@ const Morathi = {
       MorathiEffect,
       {
         name: `Iron Heart of Khaine`,
-        desc: `No more than 3 wounds and/or mortal wounds can be allocated to this unit in the same turn. Once 3 wounds and/or mortal wounds have been allocated to this unit in the same turn, not counting any wounds that were negated, any further wounds and mortal wounds that would be allocated to this unit are negated.
+        desc: `No more than 3 wounds and/or mortal wounds can be allocated to this unit in the same turn. Once 3 wounds and/or mortal wounds have been allocated to this unit in the same turn, not counting any wounds that were negated, any further wounds and mortal wounds that would be allocated to this unit are ignored and have no effect.
 
         Wounds and mortal wounds allocated to this unit at the start of the battle round count towards the number of wounds allocated to this unit in the first turn of that battle round. Wounds and mortal wounds allocated to this unit at the end of the battle round count towards the number of wounds allocated to this unit in the second turn of that battle round.
 
@@ -211,6 +213,7 @@ const Morathi = {
 
         Wounds allocated to this unit cannot be healed.`,
         when: [WOUND_ALLOCATION_PHASE],
+        rule_sources: [rule_sources.BATTLETOME_DAUGHTERS_OF_KHAINE, rule_sources.ERRATA_JULY_2022],
       },
     ],
   },
@@ -244,7 +247,7 @@ const Units = {
       DanceOfDeathEffect,
       {
         name: `Killing Stroke`,
-        desc: `At the end of the combat phase, you can pick 1 enemy Hero within 1" of this unit and roll a D3. Add the number of wounds allocated to that enemy Hero to the roll. If the roll is equal to or greater than that enemy Hero's Wounds characteristic, it is slain.`,
+        desc: `At the end of the combat phase, you can pick 1 enemy HERO within 1" of this unit and roll a D3. Add the number of wounds allocated to that enemy HERO to the roll. If the roll is equal to or greater than that enemy HERO's Wounds characteristic, it is slain.`,
         when: [END_OF_COMBAT_PHASE],
       },
       {
@@ -272,7 +275,7 @@ const Units = {
       },
       {
         name: `Wrath of Khaine`,
-        desc: `This unit counts as a Monster for the purposes of the Monstrous Rampage rules (core rules, 21.1), but you can only carry out a Stomp or Smash To Rubble monstrous rampage with it. It cannot be picked to be the target of a monstrous rampage.`,
+        desc: `This unit counts as a MONSTER for the purposes of the Monstrous Rampage rules (core rules, 21.1), but you can only carry out a Stomp or Smash To Rubble monstrous rampage with it. It cannot be picked to be the target of a monstrous rampage.`,
         when: [END_OF_CHARGE_PHASE],
         shared: true,
       },

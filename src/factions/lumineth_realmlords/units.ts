@@ -1,39 +1,29 @@
 import { keyPicker, tagAs } from 'factions/metatagger'
+import { GenericEffects } from 'generic_rules'
 import {
   BATTLESHOCK_PHASE,
   CHARGE_PHASE,
   COMBAT_PHASE,
   DURING_GAME,
-  END_OF_HERO_PHASE,
+  END_OF_CHARGE_PHASE,
+  END_OF_COMBAT_PHASE,
+  END_OF_SETUP,
   END_OF_SHOOTING_PHASE,
   HERO_PHASE,
   MOVEMENT_PHASE,
   SAVES_PHASE,
   SHOOTING_PHASE,
-  START_OF_BATTLESHOCK_PHASE,
+  START_OF_ANY_PHASE,
   START_OF_COMBAT_PHASE,
   START_OF_HERO_PHASE,
-  START_OF_ROUND,
   START_OF_SHOOTING_PHASE,
+  WARDS_PHASE,
   WOUND_ALLOCATION_PHASE,
 } from 'types/phases'
 import command_abilities from './command_abilities'
-import rule_sources from './rule_sources'
 import spells from './spells'
-
-const getBoltAndShieldWizardEffect = (
-  numberOfCasts: number,
-  numberOfUnbinds: number,
-  additionalKnownSpell: string
-) => ({
-  name: `Magic`,
-  desc: `This model is a wizard. It can attempt to cast ${numberOfCasts} spell and attempt to unbind ${numberOfUnbinds} spell. It knows ${
-    additionalKnownSpell === ''
-      ? 'Arcane Bolt and Mystic Shield'
-      : 'Arcane Bolt, Mystic Shield and ' + additionalKnownSpell
-  }.`,
-  when: [HERO_PHASE],
-})
+import rule_sources from './rule_sources'
+import meta_rule_sources from 'meta/rule_sources'
 
 const getSunmetalWeaponsEffect = (weapon: string) => ({
   name: `Sunmetal Weapons`,
@@ -42,18 +32,11 @@ const getSunmetalWeaponsEffect = (weapon: string) => ({
   shared: true,
 })
 
-const getVanariWizardsEffect = (minimumModelCountToBeWizard: number) => ({
+const getVanariWizardsEffect = (minimumModelCountToBeWizard: number, modelToBeWizard: string) => ({
   name: `Magic`,
-  desc: `This unit is a WIZARD while it has ${minimumModelCountToBeWizard} or more models. They can attempt to cast 1 spell in your hero phase and attempt to unbind 1 spell in the enemy hero phase. They know the Power of Hysh spell.`,
+  desc: `The ${modelToBeWizard} is a WIZARD while this unit has ${minimumModelCountToBeWizard} or more models. That model can attempt to cast 1 spell in your hero phase and attempt to unbind 1 spell in the enemy hero phase.`,
   when: [HERO_PHASE],
   shared: true,
-})
-
-const alarithSpiritFreeCommandAbilityEffect = (effectName: string, effectRange: number) => ({
-  name: effectName,
-  desc: `At the end of your hero phase, you can pick 1 friendly LUMINETH REALM-LORDS AELF HERO within ${effectRange}"  of this model. If that LUMINETH REALM-LORDS AELF HERO is within ${effectRange}" of this model at the start of your next hero phase, then the first command issued by that LUMINETH REALM-LORDS AELF HERO in that turn is issued without a command point being spent.`,
-  when: [END_OF_HERO_PHASE],
-  rule_sources: [rule_sources.BATTLETOME_LUMINETH, rule_sources.ERRATA_JULY_2021],
 })
 
 const StandardBearerEffect = {
@@ -72,18 +55,24 @@ const AllButImmovableEffect = {
 
 const StonemageSymbiosisEffect = {
   name: `Stonemage Symbiosis`,
-  desc: `When looking at this model's damage table, if it is within 12" of a friendly STONEMAGE, it is treated as if it has suffered 0 wounds.`,
+  desc: `If this unit is within 12" of a friendly Stonemage, use the top row on this unit's damage table, regardless of how many wounds it has suffered.`,
   when: [DURING_GAME],
   shared: true,
 }
 
 const CrushingBlowEffect = {
   name: `Crushing Blow`,
-  desc: `Unmodified hit rolls of 6 with Stone Mallets add 1 to the damage inflicted if the attack is successful.`,
+  desc: `If the unmodified hit roll for an attack made with a melee weapon by this unit is 6, that attack causes 1 mortal wound to the target in addition to any damage it inflicts.`,
   when: [COMBAT_PHASE],
   shared: true,
 }
-
+const DeepThinkersEffect = {
+  name: `Deep Thinkers`,
+  desc: `Once per battle, in your hero phase, when this unit attempts to cast its first spell in that phase, it is automatically cast with a casting roll of 9 (do not roll 2d6), but it can be unbound.`,
+  when: [HERO_PHASE],
+  rule_sources: [meta_rule_sources.BATTLESCROLL_ANDTOR_SEPTEMBER_2023],
+  shared: true,
+}
 const PurestAetherquartzHitRollEffect = {
   name: `Purest Aetherquartz`,
   desc: `Subtract 1 for hit rolls that target this unit. If this unit uses its last Aetherquartz, it can no longer use this ability.`,
@@ -99,87 +88,53 @@ const PurestAetherquartzCastingEffect = {
 
 const IntoTheGaleOverSaveEffect = {
   name: `Into the Gale`,
-  desc: `Roll a dice each time you allocate a wound or mortal wound to this unit, on a 5+ that wound or mortal wound is ignored.`,
-  when: [WOUND_ALLOCATION_PHASE],
-  rule_sources: [rule_sources.BATTLETOME_LUMINETH, rule_sources.ERRATA_JULY_2021],
+  desc: `This unit has a ward of 5+.`,
+  when: [WARDS_PHASE],
   shared: true,
 }
-const IntoTheGalePileInRestrictionEffect = {
-  name: `Into the Gale`,
-  desc: `If an enemy model starts a pile-in move within 3" of any friendly units with this ability, subtract 2" from the distance that model can pile in during that phase (to a minimum of 1").`,
-  when: [COMBAT_PHASE],
-  rule_sources: [rule_sources.BATTLETOME_LUMINETH, rule_sources.ERRATA_JULY_2021],
+const LivingCycloneEffect = {
+  name: `Living Cyclone`,
+  desc: `Roll a dice for each enemy unit that is within 3" of this unit after this unit makes a charge move. On a 3+, that unit suffers 1 mortal wound, and subtract 1 from hit rolls for that unit until the end of the next combat phase. The same unit cannot be affected by this ability more than once per phase.`,
+  when: [CHARGE_PHASE, COMBAT_PHASE],
   shared: true,
 }
 
-const LivingCycloneEffect = {
-  name: `Living Cyclone`,
-  desc: `Roll a dice each time an enemy unit that is within 3" of this model after it makes a charge move. On a 3+, the unit suffers a mortal wound and is -1 to hit until the end of the next combat phase (a unit can only be affected by this ability once per phase).`,
+const MoveLikeTheWindEffect = {
+  name: `Move like the wind`,
+  desc: `When you make a pile-in move with this unit, it does not have to finish the move no further from the nearest enemy unit than it was at the start of the move. In addition, when you make a pile-in move with this unit, if it made a charge move in the same turn, it can move an extra 3" when it piles in.`,
   when: [CHARGE_PHASE, COMBAT_PHASE],
   shared: true,
 }
 
 const SpiritOfTheWindEffect = {
   name: `Spirit of the Wind`,
-  desc: `At the end of the shooting phase, this model can make a normal move or a retreat of 12" (it cannot run). Additionally it can retreat and still charge later in the turn.`,
+  desc: `At the end of your shooting phase, this model can make a normal move or a retreat of 12" (it cannot run). In addition, this unit can retreat and still charge later in the turn.`,
   when: [END_OF_SHOOTING_PHASE],
-  rule_sources: [rule_sources.BATTLETOME_LUMINETH, rule_sources.ERRATA_JULY_2021],
   shared: true,
 }
 
-const WindmageSymbiosisEffect = {
-  name: `Windmage Symbiosis`,
-  desc: `If this model is within 12" of any friendly WINDMAGES, it heals D3 wounds.`,
-  when: [HERO_PHASE],
+const EnduringAsRockEffect = {
+  name: `Enduring as Rock`,
+  desc: `When this unit is targeted by an attack, worsen the Rend characteristic of that attack by 1, to a minimum of 0.`,
+  when: [COMBAT_PHASE, SHOOTING_PHASE],
+  rule_sources: [meta_rule_sources.BATTLESCROLL_ANDTOR_SEPTEMBER_2023],
   shared: true,
 }
 
+const ShiningCompanyEffect = {
+  name: `Shining Company`,
+  desc: `Subtract 1 from hit rolls for attacks that target this unit if this base of each model in this unit is touching the bases of 2 or more other models in the same unit.`,
+  when: [COMBAT_PHASE, SHOOTING_PHASE],
+  shared: true,
+}
+
+const SunmetalWeaponEffect = {
+  name: `Sunmetal Weapons`,
+  desc: `If the unmodified hit roll for an attack made by this unit is 6, that attack causes 1 mortal wound to the target and the attack sequence ends (do not make a wound roll or save roll). This ability has no effect made by this unti's mounts.`,
+  when: [COMBAT_PHASE],
+  shared: true,
+}
 const Units = {
-  'Alarith Stoneguard': {
-    effects: [
-      StandardBearerEffect,
-      CrushingBlowEffect,
-      {
-        name: `Diamondpick Hammer`,
-        desc: `Unmodified hit rolls of 6 with Diamondpick Hammers inflict 1 mortal wound on the target and the attack sequence ends.`,
-        when: [COMBAT_PHASE],
-      },
-      {
-        name: `Pair of Stratum Hammers`,
-        desc: `Reroll to hit rolls for a Pair of Stratum Hammers.`,
-        when: [COMBAT_PHASE],
-      },
-    ],
-  },
-  'Alarith Stonemage': {
-    mandatory: {
-      spells: [keyPicker(spells, ['Gravitic Reduction'])],
-    },
-    effects: [
-      getBoltAndShieldWizardEffect(1, 1, 'Gravitic Reduction'),
-      {
-        name: `Stonemage stance`,
-        desc: `This model and any friendly ALARITH STONEGUARD units wholly within 12" of this model cannot make a pile-in move this phase. However until the end of the phase, improve the Rend characteristic of melee weapons used by this model and those friendly units by 1.`,
-        when: [START_OF_COMBAT_PHASE],
-      },
-    ],
-  },
-  'Alarith Spirit of the Mountain': {
-    mandatory: {
-      command_abilities: [keyPicker(command_abilities, ['Faith of the Mountains'])],
-      spells: [keyPicker(spells, ['Power of Hysh'])],
-    },
-    effects: [
-      StonemageSymbiosisEffect,
-      AllButImmovableEffect,
-      alarithSpiritFreeCommandAbilityEffect(`Ponderous Advice`, 3),
-      {
-        name: `Stoneheart Shockwave`,
-        desc: `Pick 1 enemy unit within range of this ability that is visible to this model. Subtract 1 from to hit rolls until the end of that phase. A unit cannot be affected by this ability more than once per phase.`,
-        when: [START_OF_COMBAT_PHASE, START_OF_SHOOTING_PHASE],
-      },
-    ],
-  },
   'Archmage Teclis': {
     mandatory: {
       spells: [keyPicker(spells, ['Protection of Teclis', 'Storm of Searing White Light'])],
@@ -187,259 +142,60 @@ const Units = {
     effects: [
       {
         name: `Archmage`,
-        desc: `At the start of your hero phase, say if you're going to cast 1, 2 or 4 spells. If this model will cast 1 spell, when it attempts to cast that spell, it is automatically cast with a casting roll of 12 that cannot be modified (do not roll 2D6) and it cannot be unbound. If casting 2 spells, each is automatically cast with a casting roll of 12, and they can be unbound. If casting 4 spells, each is automatically cast with a casting roll of 10, and they can be unbound.`,
+        desc: `At the start of your hero phase, you must say how many spells this unit will cast. The number of spells it can cast are shown in the damage table. If you say 1 spell, when it attempts to cast that spell, it is automatically cast with a casting roll of 12 that cannot be modified (do not roll 2D6) and it cannot be unbound. If you say 2 spells, when it attempts to cast those spells, each is automatically cast with a casting roll of 12 that cannot be modified (do not roll 2D6). These spells can be unbound. If you say up to 4 spells, each is automatically cast with a casting roll of 10 that cannot be modified (do not roll 2D6). These spells can be unbound.`,
         when: [HERO_PHASE],
-        rule_sources: [rule_sources.BATTLETOME_LUMINETH, rule_sources.ERRATA_MAY_2021],
       },
       {
         name: `Wizard`,
-        desc: `This model is a wizard. The number of spells it can cast depends on the Archmage ability. It can unbind any number of spells. Knows Arcane Bolt and Mystic Shield, Protection of Teclis and Storm of Seering White Light.`,
+        desc: `This model is a WIZARD. The number of spells it can cast depends on the Archmage ability. It can unbind any number of spells in the enemy hero phase.`,
         when: [HERO_PHASE],
       },
       {
         name: `Aura of Celennar`,
-        desc: `Add 1 to casting and unbind rolls for friendly LUMINETH REALM-LORDS in range of this models Aura of Celennar ability.`,
+        desc: `Add 1 to casting, dispelling and unbinding rolls for friendly Lumineth Realm-Lords units wholly within range of this unit's Aura of Celennar ability. The range of the Aura of Celennar ability for this unit is shown on the damage table.`,
         when: [HERO_PHASE],
       },
       {
         name: `Discs of the Aelementari`,
-        desc: `In your hero phase, you can automatically dispel 1 endless spell. In the enemy hero phase, you can automatically unbind 1 enemy spell.`,
+        desc: `At the start of your hero phase, in addition to casting spells, this unit can automatically dispel 1 endless spell (do not roll 2D6).`,
+        when: [START_OF_HERO_PHASE],
+        rule_sources: [
+          rule_sources.BATTLETOME_LUMINETH,
+          meta_rule_sources.BATTLESCROLL_DEPLETED_RESERVES_APRIL_2023,
+        ],
+      },
+      {
+        name: `Discs of the Aelementari`,
+        desc: `In the enemy hero phase, this unit can automatically unbind 1 enemy spell (do not roll 2D6).`,
         when: [HERO_PHASE],
+        rule_sources: [
+          rule_sources.BATTLETOME_LUMINETH,
+          meta_rule_sources.BATTLESCROLL_DEPLETED_RESERVES_APRIL_2023,
+        ],
       },
       {
         name: `Seeing Stone of Celennar`,
-        desc: `Each time a friendly model within range of this model's Aura of Celennar ability is affected by a spell or endless spell cast by an enemy WIZARD, you can roll a D6. On a 4+, ignore the effects. Then, pick 1 enemy unit within 18" of that unit. That enemy unit suffers D3 mortal wounds.`,
-        when: [WOUND_ALLOCATION_PHASE],
-      },
-    ],
-  },
-  'Avalenor, the Stoneheart King': {
-    mandatory: {
-      command_abilities: [keyPicker(command_abilities, ['Unshakeable Faith of the Mountains'])],
-    },
-    effects: [
-      StonemageSymbiosisEffect,
-      AllButImmovableEffect,
-      alarithSpiritFreeCommandAbilityEffect(`Elder Wisdom`, 6),
-      {
-        name: `Firestealer Hammers`,
-        desc: `Unmodified hit rolls of 6 with Firestealer hammers inflict 1 mortal wound in addition to any normal damage.`,
-        when: [COMBAT_PHASE],
-      },
-      {
-        name: `Guardian of Hysh`,
-        desc: `Subtract 1 from hit rolls for attacks made by enemy models within range of this ability.`,
-        when: [COMBAT_PHASE, SHOOTING_PHASE],
-      },
-    ],
-  },
-  'Ellania and Ellathor, Eclipsian Warsages': {
-    mandatory: {
-      spells: [keyPicker(spells, ['Salvation of Hysh'])],
-    },
-    effects: [
-      getBoltAndShieldWizardEffect(2, 2, 'Salvation of Hysh'),
-      {
-        name: `Aspect of Celennar`,
-        desc: `Add 1 to casting, dispelling and unbinding rolls.`,
+        desc: `Each time a friendly unit within range of this unit's Aura of Celennar ability is affected by the abilities of an endless spell summoned by an enemy WIZARD or a spell cast by an enemy WIZARD, you can roll a dice. On a 4+, ignore the effect of that spell or the effects of that endless spell's abilities on that unit. Then, if the dice roll was successful, pick 1 enemy unit within 18" of that unit. That enemy unit suffers D3 mortal wounds.`,
         when: [HERO_PHASE],
-      },
-      {
-        name: `Realm Wanderers`,
-        desc: `If this model with within 3" of your general, roll a dice. On a 4+, you receive 1 command point.`,
-        when: [HERO_PHASE],
-      },
-      {
-        name: `Altairi`,
-        desc: `Damage characteristic is equal to the current battle round.`,
-        when: [COMBAT_PHASE],
-      },
-      {
-        name: `Altairi`,
-        desc: `Once per battle, pick 1 point on the battlefield within 12" of this model that is visible. Draw an imaginary line 1mm wide between that point and the closest point on this model's base. Roll a dice for each unit that has any models passed across by this line. On a 2+, that unit suffers a number of mortal wounds equal to the number of the current battle round.`,
-        when: [SHOOTING_PHASE],
-      },
-      {
-        name: `Sudden Translocation`,
-        desc: `At the end of the phase, roll a dice if this model fought in that phase. If the roll is less than the number of the current battle round, or less than the number of wounds allocated to this model then heal up to D6 wounds and remove it from the battlefield. Then set it back up more than 12" from any enemy models. If this is impossible, this model is removed, but does not count as having been slain.`,
-        when: [COMBAT_PHASE],
-      },
-    ],
-  },
-  'Hurakan Spirit of the Wind': {
-    effects: [
-      IntoTheGaleOverSaveEffect,
-      IntoTheGalePileInRestrictionEffect,
-      SpiritOfTheWindEffect,
-      LivingCycloneEffect,
-      WindmageSymbiosisEffect,
-    ],
-  },
-  'Hurakan Windchargers': {
-    effects: [
-      StandardBearerEffect,
-      {
-        name: `Windcharger Arrows`,
-        desc: `Do not apply cover saves for attacks made with a Windcharger Bow.`,
-        when: [SAVES_PHASE],
-      },
-      {
-        name: `Go Where the Wind Blows`,
-        desc: `When this unit moves, it can move across terrain in the same matter as a model that can fly.`,
-        when: [MOVEMENT_PHASE],
-      },
-    ],
-  },
-  'Hurakan Windmage': {
-    mandatory: {
-      spells: [keyPicker(spells, ['Windblast Vortex'])],
-    },
-    effects: [
-      getBoltAndShieldWizardEffect(1, 1, 'Windblast Vortex'),
-      {
-        name: `Fan of Redirection`,
-        desc: `Add 1 to save rolls for attacks made with missile weapons that target this model. Additionally, if the unmodified save roll for a missle weapon is 6, after all the attacking unit's attacks have been resolved, inflict 1 mortal wound on 1 enemy unit within 9" of this model that is visible to it.`,
-        when: [WOUND_ALLOCATION_PHASE],
-      },
-      {
-        name: `Windleap`,
-        desc: `If a friendly WINDCHARGERS unit starts a move wholly within 6", when it moves it has a move characteristic of 16" and can fly.`,
-        when: [MOVEMENT_PHASE],
-      },
-    ],
-  },
-  'Lyrior Uthralle, Warden of Ymetrica': {
-    mandatory: {
-      spells: [keyPicker(spells, ['Greater Power of Hysh'])],
-    },
-    effects: [
-      PurestAetherquartzHitRollEffect,
-      PurestAetherquartzCastingEffect,
-      getSunmetalWeaponsEffect(`Regent's Sword`),
-      {
-        name: `Demonbane`,
-        desc: `The damage inflicted by Demonbane is 3 instead of D3 if the target has the CHAOS and DEMON keywords.`,
-        when: [COMBAT_PHASE],
-      },
-      {
-        name: `Voice of Tyrion`,
-        desc: `If this model is on the battlefield, and TECLIS is not part of your army, on a 2+ you receive 1 command point.`,
-        when: [START_OF_HERO_PHASE],
-      },
-    ],
-  },
-  'Myari Lightcaller': {
-    mandatory: {
-      spells: [keyPicker(spells, ['Dazzling Light'])],
-    },
-    effects: [
-      getBoltAndShieldWizardEffect(1, 1, 'Dazzling Light'),
-      {
-        name: `Scryowl Familiar`,
-        desc: `Add 1 to casting, unbinding, and dispelling rolls for this model.`,
-        when: [HERO_PHASE],
-      },
-      {
-        name: `Scryowl Familiar`,
-        desc: `You can pick 1 enemy unit within 24" and not visible. The target becomes visible.`,
-        when: [START_OF_HERO_PHASE, START_OF_SHOOTING_PHASE],
-      },
-    ],
-  },
-  "Myari's Purifiers": {
-    effects: [
-      getSunmetalWeaponsEffect(`Sunmetal Greatsword or an Auralan Bow`),
-      CrushingBlowEffect,
-      {
-        name: `Guardians`,
-        desc: `Roll a D6 for each wound or mortal wound allocated to a friendly MYARI LIGHTCALLER within 3". On a 2+, this unit is allocated the wound instead.`,
-        when: [WOUND_ALLOCATION_PHASE],
-      },
-    ],
-  },
-  'Scinari Calligrave': {
-    mandatory: {
-      spells: [keyPicker(spells, ['Erasure'])],
-    },
-    effects: [
-      getBoltAndShieldWizardEffect(1, 1, 'Erasure'),
-      {
-        name: `Realmscribe`,
-        desc: `One per battle, instead of attempting to cast spells with 1 friendly model with this ability, roll a dice and add the current battle round. on a 5+ pick a point on the battle field. For the rest of the battle do not take battleshock tests for friendly LUMINETH REALM-LORDS units wholly with 9" of that point, and add 1 to casting, dispelling and unbinding rolls for friendly LUMINETH REALM-LORDS WIZARDS within 9" of that point.`,
-        when: [HERO_PHASE, BATTLESHOCK_PHASE],
-      },
-    ],
-  },
-  'Scinari Cathallar': {
-    mandatory: {
-      spells: [keyPicker(spells, ['Darkness of the Soul'])],
-    },
-    effects: [
-      getBoltAndShieldWizardEffect(1, 1, 'Darkness of the Soul'),
-      {
-        name: `Emotional Transference`,
-        desc: `Pick one friendly LUMINETH REALM-LORDS unit wholly within 18" of this model and roll a D6. On a 2+, do not take a battle shock test for that unit. In addition, if any model from that unit were slain during that turn, you can pick one enemy unit within 18" of this model that has to take a battleshock test in that phase. Add the number of models from the friendly unit that were slain during that turn to the battleshock roll for that enemy unit.`,
-        when: [START_OF_BATTLESHOCK_PHASE],
-      },
-    ],
-  },
-  'Scinari Loreseeker': {
-    effects: [
-      getBoltAndShieldWizardEffect(1, 1, ''),
-      {
-        name: `Loreseeker`,
-        desc: `If an enemy model with an artifact is slain within 3" of any friendly models with this ability, you receive 1 command point.`,
-        when: [DURING_GAME],
-      },
-      {
-        name: `Lone Agent`,
-        desc: `You can add 1 to save rolls for attacks that target this model, if it is more than 9" from any friendly models.`,
-        when: [SAVES_PHASE],
-      },
-      {
-        name: `Lone Agent`,
-        desc: `Instead of setting this model up as usual you can set it in Lone Agent reserve. At the start of the first battle round, before determining who has the first turn, you must set this model up on the battlefield anywhere more than 3" from any enemy units, and not in your territory. If you set up this model within 6" of an objective that has no enemy units within 6" of it, you gain control of that objective, and your opponent cannot gain control of it while this model is within 6" of it.`,
-        when: [START_OF_ROUND],
-      },
-    ],
-  },
-  'Sevireth, Lord of the Seventh Wind': {
-    effects: [
-      IntoTheGaleOverSaveEffect,
-      IntoTheGalePileInRestrictionEffect,
-      SpiritOfTheWindEffect,
-      LivingCycloneEffect,
-      WindmageSymbiosisEffect,
-      {
-        name: `Scour`,
-        desc: `Pick one faction terrain piece within 1" of this model. Roll a dice, on a 2+ the terrain feature's warscroll cannot be used for the rest of the battle.`,
-        when: [CHARGE_PHASE],
-      },
-      {
-        name: `Searing Desert Winds`,
-        desc: `After this unit makes a move, pick 1 enemy unit this model moved across. On a 3+ it suffers D3 mortal wounds.`,
-        when: [MOVEMENT_PHASE, SHOOTING_PHASE],
+        rule_sources: [rule_sources.BATTLETOME_LUMINETH, rule_sources.ERRATA_APRIL_2023],
       },
     ],
   },
   'The Light of Eltharion': {
-    mandatory: {
-      command_abilities: [keyPicker(command_abilities, ['Unflinching Valour'])],
-    },
     effects: [
       {
         name: `Celennari Blade`,
-        desc: `You can pick 1 enemy HERO within 3" of this model. If you do so, add 1 to the damage inflicted by successful attacks made with this model's Celennari Blade that target that HERO in that phase.`,
+        desc: `At the start of the combat phase, you can pick 1 enemy Hero or Monster within 3" of this unit. If you do so, attacks made with this unit's Celennari Blade that target that Hero or Monster in this phase have a Damage characteristic of 2D3 instead of 3.`,
         when: [START_OF_COMBAT_PHASE],
       },
       {
         name: `Fangsword of Eltharion`,
-        desc: `Add 1 to wound rolls for attacks made with this model's Fangsword of Eltharion if this model made a charge move in the same turn. In addition, if the unmodified wound roll for an attack made with this model's Fangsword of Eltharion is 6, that attack inflicts 1 mortal wound on the target in addition to any normal damage.`,
+        desc: `Add 1 to wound rolls for attacks made with this model's Fangsword of Eltharion if this model made a charge move in the same turn. In addition, if the unmodified wound roll for an attack made with this model's Fangsword of Eltharion is 6, that attack inflicts 1 mortal wound on the target in addition to any damage it inflicts.`,
         when: [COMBAT_PHASE],
       },
       {
         name: `Searing Darts of Light`,
-        desc: `In your shooting phase, you can pick 1 enemy unit within 18" of this model that is visible to them and roll a D6. On a 1, nothing happens. On a 2-4, that unit suffers D3 mortal wounds. On a 5+, that unit suffers D6 mortal wounds.`,
+        desc: `In your shooting phase, you can pick 1 enemy unit within 18" of this unit that is visible to it and roll a dice. On a 1, nothing happens. On a 2-4, that unit suffers D3 mortal wounds. On a 5+, that unit suffers D6 mortal wounds.`,
         when: [SHOOTING_PHASE],
       },
       {
@@ -454,101 +210,29 @@ const Units = {
       },
       {
         name: `Supreme Swordmaster`,
-        desc: `Ignore negative modifiers when making hit rolls for attacks made by this model. In addition, if the unmodified hit roll for an attack made by this model is 6, that attack scores 2 hits on the target instead of 1. Make a wound and save roll for each hit.`,
+        desc: `Ignore negative modifiers when making hit rolls for attacks made by this unit. In addition, if the unmodified hit roll for an attack made by this model is 6, that attack scores 2 hits on the target instead of 1. Make a wound and save roll for each hit.`,
         when: [COMBAT_PHASE],
       },
     ],
   },
-  'Vanari Auralan Sentinels': {
+  'Lyrior Uthralle, Warden of Ymetrica': {
     mandatory: {
-      spells: [keyPicker(spells, ['Power of Hysh'])],
+      spells: [keyPicker(spells, ['Greater Power of Hysh'])],
     },
     effects: [
-      getVanariWizardsEffect(5),
-      getSunmetalWeaponsEffect(`Auralan Bow`),
+      PurestAetherquartzHitRollEffect,
+      PurestAetherquartzCastingEffect,
+      getSunmetalWeaponsEffect(`Regent's Sword`),
       {
-        name: `Scryhawk Lantern`,
-        desc: `Pick one enemy unit within 30" of this unit's High Sentinel that is not visible to them. Choose the Lofted missile weapon characteristic for this unit's Auralan Bows in that phase, but that enemy unit is treated as being visible to all friendly models from that unit until the end of the phase.`,
-        when: [START_OF_SHOOTING_PHASE],
-      },
-      {
-        name: `Many-stringed Weapon`,
-        desc: `Before attacking with Auralan Bows, choose the Aimed or Lofted missile weapon characteristic for all shooting attacks made by this unit in that phase.`,
-        when: [SHOOTING_PHASE],
-      },
-    ],
-  },
-  'Vanari Auralan Wardens': {
-    mandatory: {
-      spells: [keyPicker(spells, ['Power of Hysh'])],
-    },
-    effects: [
-      getSunmetalWeaponsEffect(`Warden's Pike`),
-      getVanariWizardsEffect(5),
-      {
-        name: `Moonfire Flask`,
-        desc: `Once per battle, you can pick 1 enemy unit within 3" of this unit's High Warden and roll a D6. On a 2+, that enemy unit suffers D3 mortal wounds.`,
-        when: [START_OF_COMBAT_PHASE],
-      },
-      {
-        name: `Wall of Blades`,
-        desc: `If the target unit made a charge move in the same turn, add 1 to wound rolls for attacks made with this unit's Warden's Pikes and improve the Rend characteristic of that weapon by 1.`,
+        name: `Daemonbane`,
+        desc: `The damage inflicted by a successful attack made with Daemonbane is 3 instead of D3 if the target has the Chaos and Daemon keywords.`,
         when: [COMBAT_PHASE],
       },
-    ],
-  },
-  'Vanari Bannerblade': {
-    effects: [
-      getSunmetalWeaponsEffect(`Bannerblade's Sword`),
       {
-        name: `World Banner`,
-        desc: `Add 1 (or 3 if any Bannerblades are within 3" of any enemy units) to the bravery of all LUMINETH REALM-LORDS wholly within 18" of this model.`,
+        name: `Voice of Tyrion`,
+        desc: `Once per battle round, this unit can issue a command to a friendly Ymetrica unit anywhere on the battlefield without spending a command point.`,
         when: [DURING_GAME],
       },
-      {
-        name: `World Banner`,
-        desc: `One per battle, roll a dice for each enemy unit within 18". If the roll is equal to or less than the number of the current battle round, the unit suffers D3 mortal wounds and subtracts 1 from hit rolls until the end of the phase.`,
-        when: [DURING_GAME],
-      },
-    ],
-  },
-  'Vanari Bladelords': {
-    effects: [
-      {
-        name: `Guardians`,
-        desc: `Roll a D6 for each wound or mortal wound allocated to a friendly SCINARI within 3". On a 2+, you must allocate the wound instead to a unit with this ability.`,
-        when: [WOUND_ALLOCATION_PHASE],
-      },
-      {
-        name: `Swordmasters`,
-        desc: `Before fighting with this unit, pick either Perfect Strike (do not make a hit roll) or Flurry of Blows (attacks characteristic equal to the number of enemy models within 2" of the attacking model).`,
-        when: [COMBAT_PHASE],
-      },
-      {
-        name: `Vanashimor Banners`,
-        desc: `Each time the unit is affected by a spell or endless spell, roll a dice. On a 4+ ignore the effects of the spell or endless spell.`,
-        when: [WOUND_ALLOCATION_PHASE],
-      },
-    ],
-  },
-  'Vanari Dawnriders': {
-    mandatory: {
-      spells: [keyPicker(spells, ['Power of Hysh'])],
-    },
-    effects: [
-      {
-        name: `Deathly Furrows`,
-        desc: `If you use this ability, you can either add 1 to the Attacks characteristic of this unit's melee weapons, but it can only target units that have a Wounds characteristic of 1 or 2 and do not have a mount, or you can add 2 to the Attacks characteristic of this unit's melee weapons, but it can only target units that have a Wounds characteristic of 1 and do not have a mount.`,
-        when: [START_OF_COMBAT_PHASE],
-      },
-      {
-        name: `Lances of the Dawn`,
-        desc: `If this unit made a charge move in the same turn, add 1 to wound rolls for attacks made with this unit's Sunmetal Lances and improve the Rend characteristic of that weapon by 1.`,
-        when: [COMBAT_PHASE],
-      },
-      getSunmetalWeaponsEffect(`Sunmetal Lance`),
-      getVanariWizardsEffect(3),
-      StandardBearerEffect,
     ],
   },
   'Vanari Lord Regent': {
@@ -561,28 +245,350 @@ const Units = {
       PurestAetherquartzHitRollEffect,
     ],
   },
+  'Vanari Bannerblade': {
+    effects: [
+      SunmetalWeaponEffect,
+      {
+        name: `World Banner`,
+        desc: `You can reroll charge rolls for friendly Lumineth Realm-Lords units wholly within 18" of any friendly Bannerblades.`,
+        when: [CHARGE_PHASE],
+      },
+      {
+        name: `World Banner`,
+        desc: `In addition, once per battle at the start of any phase, you can say that this unit will draw upon the power of its World Banner. If you do so, roll a dice for each enemy unit within 18" of this unit. If the roll is equal to or less than the current battle round, that unit suffers D3 mortal wounds, and subtract 1 from hit rolls for that unit until the end of that phase.`,
+        when: [START_OF_ANY_PHASE],
+      },
+    ],
+  },
+  'Vanari Auralan Sentinels': {
+    mandatory: {
+      spells: [keyPicker(spells, ['Power of Hysh'])],
+    },
+    effects: [
+      getVanariWizardsEffect(5, `High Sentinel`),
+      {
+        name: `Scryhawk Lantern`,
+        desc: `Add 6" to the Range characteristic of this unit's Lofted Auralan Bows while it is within 12" of any other friendly Auralan Sentinels units or Starshard Ballistas.`,
+        when: [SHOOTING_PHASE],
+      },
+      {
+        name: `Many-stringed Weapon`,
+        desc: `Each time this unit shoots, choose either the Aimed or Lofted weapon characteristic for all the attacks it makes with its Auralan Bows.`,
+        when: [SHOOTING_PHASE],
+      },
+    ],
+    SunmetalWeaponEffect,
+  },
+  'Vanari Auralan Wardens': {
+    mandatory: {
+      spells: [keyPicker(spells, ['Power of Hysh'])],
+    },
+    effects: [
+      SunmetalWeaponEffect,
+      getVanariWizardsEffect(5, `High Warden`),
+      {
+        name: `Wall of Blades`,
+        desc: `If the target unit made a charge move in the same turn, add 1 to wound rolls for attacks made with this unit's Warden's Pike and improve the Rend characteristic of that weapon by 1.`,
+        when: [COMBAT_PHASE],
+      },
+      ShiningCompanyEffect,
+    ],
+  },
+  'Vanari Dawnriders': {
+    mandatory: {
+      spells: [keyPicker(spells, ['Power of Hysh'])],
+    },
+    effects: [
+      {
+        name: `Deathly Furrows`,
+        desc: `At the start of the combat phase, you can say that this unit will use its Deathly Furrows ability. If you do so, in that phase, you can either 1 to the Attacks characteristic of this unit's melee weapons, but it can only target units that a Wounds characteristic of 1 or 2 and do not have a mount, or you can add 2 to the Attacks characteristic of this unit's melee weapons, but it can only target units that have a Wounds characteristic of 1 and do not have a mount.`,
+        when: [START_OF_COMBAT_PHASE],
+      },
+      {
+        name: `Lances of the Dawn`,
+        desc: `If this unit made a charge move in the same turn, add 1 to wound rolls for attacks made with this unit's Sunmetal Lances and improve the Rend characteristic of that weapon by 1.`,
+        when: [COMBAT_PHASE],
+      },
+      SunmetalWeaponEffect,
+      getVanariWizardsEffect(3, `Steedmaster`),
+      StandardBearerEffect,
+      ShiningCompanyEffect,
+    ],
+  },
   'Vanari Starshard Ballistas': {
     effects: [
       {
         name: `Blinding Bolts`,
-        desc: `Once per battle, units hit by an attack from this unit, subtract 1 from hit rolls until the end of the turn. A unit cannot be affected more than once per turn.`,
+        desc: `Once per battle, when you pick this unit to shoot, you can say that it will fire its blinding bolts. If you do so, in addition to any damage inflicted, units that are hit by an attack made by this unit in that phase are dazzled until the end of the turn. Subtract 1 from hit rolls for a unit that is dazzled.`,
         when: [SHOOTING_PHASE],
       },
       {
-        name: `Messenger Hawk`,
-        desc: `Add 1 to hit rolls for attacks made with Starshard Bolts by this unit, if the attacks target an enemy unit that is visible to a friendly LUMINETH REALM-LORDS HERO that is within 18" of this unit.`,
+        name: `Scryhawksk`,
+        desc: `Add 6" to the Range characteristic of this unit's Starshard Bolts while it is within 12" of any other friendly Starshard Ballistas or Auralan Sentinels units.`,
         when: [SHOOTING_PHASE],
-        rule_sources: [rule_sources.BATTLETOME_LUMINETH, rule_sources.ERRATA_JULY_2021],
       },
       {
         name: `Warding Lanterns`,
-        desc: `Each time you allocate a wound or mortal wound to the bearer, if the unit has not moved this turn, roll a D6. On a 6 the wound or mortal wound is negated.`,
+        desc: `This unit has a ward of 6+ if it remains stationary in the same turn.`,
+        when: [WARDS_PHASE],
+      },
+    ],
+  },
+  'Vanari Bladelords': {
+    effects: [
+      {
+        name: `Guardians`,
+        desc: `Before you allocate a wound or mortal wound to a friendly Scinari unit, or instead of making a ward roll for a wound or mortal wound that would be allocated to that Scinari unit, if any friendly units with this ability are within 3" of that unit, roll a dice. On a 2+, that wound or mortal wound must be allocated to a friendly unit with this ability within 3" of that unit instead of that tunit and cannot be negated.`,
         when: [WOUND_ALLOCATION_PHASE],
       },
       {
-        name: `Warding Lanterns`,
-        desc: `If the unit has not moved this turn, add 1 to attacks of this unit's Starshard bolts.`,
+        name: `Swordmasters`,
+        desc: `Each time this unit fights, choose either the Perfect Strike or Flurry of Blows weapon characteristics for rall attacks it makes with its Sunmetal Greatblades.
+        
+        Do not use the attack sequence for a Perfect Strike attack. Instead roll a dice. On a 2+, that target suffers 1 mortal wowund. Add 1 to the attack characteristic of a Flurry of Blows attack if there are 3-9 models in the target unit. Add 2 to the Attacks characteristic of a Flurry of Blows attack instead if there are 10 or more models in the target unit..`,
+        when: [COMBAT_PHASE],
+      },
+      SunmetalWeaponEffect,
+      ShiningCompanyEffect,
+    ],
+  },
+  'Scinari Cathallar': {
+    mandatory: {
+      spells: [keyPicker(spells, ['Darkness of the Soul'])],
+    },
+    effects: [
+      GenericEffects.WizardOneSpellEffect,
+      {
+        name: `Absorb Despair`,
+        desc: `Once per phase, if a friendly unit uses its aetherquartz reserve while it is wholly within 18" of any friendly units with this ability, you can say that this unit will absorb the negative energy. If you do so, do not subtract 1 from that unit's Bravery characterstic. Instead, you can pick 1 enemy unit within 18" of this unit. If you do so, subtract 1 from the Bravery characteristic of that unit for the rest of the battle. The same enemy unit cannot be affected by this ability more than once per battle.`,
+        when: [DURING_GAME, BATTLESHOCK_PHASE],
+      },
+    ],
+  },
+  'Scinari Enlightener': {
+    mandatory: {
+      spells: [keyPicker(spells, ['Twinned Tether'])],
+    },
+    effects: [
+      GenericEffects.WizardTwoSpellsEffect,
+      DeepThinkersEffect,
+      {
+        name: `Rune of Enthlai`,
+        desc: `Once per turn, if this unit successfully casts a spell from the Lore of Hysh, and that spell is not unbound, you can roll a dice after the effect of that spell has been resolved. On a 3+, you can immediately resolve the effect of that spell for a second time, but you cannot pick the same target that was picked for that spell the first time its effect was resolved.`,
+        when: [HERO_PHASE],
+      },
+    ],
+  },
+  'Scinari Calligrave': {
+    mandatory: {
+      spells: [keyPicker(spells, ['Erasure'])],
+    },
+    effects: [
+      GenericEffects.WizardOneSpellEffect,
+      DeepThinkersEffect,
+      {
+        name: `Realmscribe`,
+        desc: `One per battle, instead of attempting to cast any spells with 1 friendly model with this ability, you can roll a dice. Add the number of the current battle round to the roll.. on a 5+ pick a point on the battlefield. For the rest of the battle do not take battleshock tests for friendly Lumineth Realm-Lords units wholly with 9" of that point, and add 1 to casting, dispelling and unbinding rolls for friendly Lumineth Realm-Lords Wizards within 9" of that point.`,
+        when: [HERO_PHASE, BATTLESHOCK_PHASE],
+      },
+    ],
+  },
+  'Scinari Loreseeker': {
+    effects: [
+      GenericEffects.WizardOneSpellEffect,
+      {
+        name: `Lone Agent`,
+        desc: `Add 1 to save rolls for attacks that target this unit if it is more than 9" from all friendly models.`,
+        when: [SAVES_PHASE],
+      },
+      {
+        name: `Lone Agent`,
+        desc: `Instead of setting this unit on the battlefield, you can place it to one side and say that it is set up as a Lone Agent reserve unit. If you do so, at the end of  deployment, before determining control of objectives, you must set up all friendly Lone Agent reserve units on the battlefield more than 3" from all enemy units and not in your territory.
+        
+        If you set up a friendly Lone Agent reserve unit within 6" of an objective that is not controlled by enemy units, that Lone Agent reserve unit counts as 10 models for the purposes of contesting that objective.`,
+        when: [END_OF_SETUP],
+      },
+    ],
+  },
+  'Alarith Spirit of the Mountain': {
+    mandatory: {
+      command_abilities: [keyPicker(command_abilities, ['Faith of the Mountains'])],
+    },
+    effects: [
+      StonemageSymbiosisEffect,
+      AllButImmovableEffect,
+      {
+        name: `Stoneheart Shockwave`,
+        desc: `At the start of your opponent's shooting phase and at the start of the combat phase, you can pick 1 enemy unit within range of this unit's Stoneheart Shock Wave ability and is visible to it. The range of this unit's Stoneheart Shock Wave ability is shown on its damage table. If you do so, subtract 1 from hit rolls for that unit until the end of that phase.`,
+        when: [START_OF_COMBAT_PHASE, START_OF_SHOOTING_PHASE],
+      },
+    ],
+  },
+  'Alarith Stoneguard': {
+    effects: [
+      StandardBearerEffect,
+      CrushingBlowEffect,
+      EnduringAsRockEffect,
+      {
+        name: `Fortitude of the Earth`,
+        desc: `This unit has a ward of 4+ against mortal wounds while it is contesting an objective that you control.`,
+        when: [WARDS_PHASE],
+      },
+    ],
+  },
+  'Alarith Stonemage': {
+    mandatory: {
+      spells: [keyPicker(spells, ['Gravitic Redirection'])],
+    },
+    effects: [
+      EnduringAsRockEffect,
+      GenericEffects.WizardOneSpellEffect,
+      {
+        name: `Stonemage stance`,
+        desc: `At the start of the combat phase, you can say that this unit will adopt the Stonemage stance. If you do so, this unit and any friendly Stoneguard units wholly within 12" of this unit cannot make pile-in moves in that phase. However, until the end of that phase, improve the Rend characteristic of melee weapons used by this unit and those friendly units by 1.`,
+        when: [START_OF_COMBAT_PHASE],
+      },
+    ],
+  },
+  'Avalenor, the Stoneheart King': {
+    mandatory: {
+      command_abilities: [keyPicker(command_abilities, ['Unshakeable Faith of the Mountains'])],
+    },
+    effects: [
+      StonemageSymbiosisEffect,
+      AllButImmovableEffect,
+      EnduringAsRockEffect,
+      {
+        name: `Firestealer Hammers`,
+        desc: `If the unmodified hit roll for an attack made with the Firestealer Hammers is 6, that attack causes 1 mortal wound in to the target in addition to any damage it inflicts.`,
+        when: [COMBAT_PHASE],
+      },
+      {
+        name: `Guardian of Hysh`,
+        desc: `Subtract 1 from hit rolls for attacks made by enemy units within range of this unit's Guardian of Hysh ability. The range of this unit's Guardian of Hysh ability is shown on its damage table.`,
+        when: [COMBAT_PHASE, SHOOTING_PHASE],
+      },
+    ],
+  },
+  'Ellania and Ellathor, Eclipsian Warsages': {
+    mandatory: {
+      spells: [keyPicker(spells, ['Salvation of Hysh'])],
+    },
+    effects: [
+      GenericEffects.WizardTwoSpellsEffect,
+      {
+        name: `Aspect of Celennar`,
+        desc: `Add 1 to casting, dispelling and unbinding rolls.`,
+        when: [HERO_PHASE],
+      },
+      {
+        name: `Realm Wanderers`,
+        desc: `This unit can be included as an ally in armies that have an Order general. In addition, if this model with within 3" of your general at the start of your hero phase, roll a dice. On a 4+, you receive 1 extra command point. However, this unit can never be a general.`,
+        when: [HERO_PHASE],
+      },
+      {
+        name: `Altairi`,
+        desc: `The Damage characteristic of Altairi is equal to the number of the current battle round.`,
+        when: [COMBAT_PHASE],
+      },
+      {
+        name: `Altairi`,
+        desc: `Once per battle in your shooting phase, you can say that Ellathor will unlease a blazing sunbolt. If you do so, pick 1 point on the battlefield within 12" of this unit and visible to it and draw a line between that point and the closest point on this unit's base. Roll a dice for each unit that has any models passed across by this line. On a 2+, that unit suffers a number of mortal wounds equal to the number of the current battle round.`,
         when: [SHOOTING_PHASE],
+      },
+      {
+        name: `Sudden Translocation`,
+        desc: `At the end of the combat phase, roll a dice if this unit fought in that phase. If the roll is less than the number of the current battle round, or less than the number of wounds allocated to this model then heal up to D6 wounds and remove it from the battlefield. Then, set it back up more than 12" from all enemy units. If this is impossible, this model is removed, but does not count as having been destroyed.`,
+        when: [END_OF_COMBAT_PHASE],
+      },
+    ],
+  },
+  'Hurakan Windmage': {
+    mandatory: {
+      spells: [keyPicker(spells, ['Windblast Vortex'])],
+    },
+    effects: [
+      GenericEffects.WizardOneSpellEffect,
+      MoveLikeTheWindEffect,
+      {
+        name: `Fan of Redirection`,
+        desc: `Add 1 to save rolls for attacks made with missile weapons that target this model. In addition, if the unmodified save roll for an attack made with a missle weapon that targets this unit is 6, after all the attacking unit's attacks have been resolved, you can cause 1 mortal wound to 1 enemy unit within 9" of this unit and visible to it.`,
+        when: [WOUND_ALLOCATION_PHASE],
+      },
+      {
+        name: `Windleap`,
+        desc: `If a friendly Windchargers unit starts a move wholly within 6", when it makes that move, that unit has a Move characteristic of 16" and can fly.`,
+        when: [MOVEMENT_PHASE],
+      },
+    ],
+  },
+  'Hurakan Windchargers': {
+    effects: [
+      StandardBearerEffect,
+      MoveLikeTheWindEffect,
+      {
+        name: `Windcharger Arrows`,
+        desc: `Ward rolls cannot be made for wounds and mortal wounds caused by attacks made with missle weapons by this unit.`,
+        when: [SAVES_PHASE],
+      },
+      {
+        name: `Go Where the Wind Blows`,
+        desc: `When this unit moves, it can pass across terrain in the same matter as a model that can fly.`,
+        when: [MOVEMENT_PHASE],
+      },
+    ],
+  },
+  'Sevireth, Lord of the Seventh Wind': {
+    effects: [
+      IntoTheGaleOverSaveEffect,
+      LivingCycloneEffect,
+      MoveLikeTheWindEffect,
+      SpiritOfTheWindEffect,
+      {
+        name: `Scour`,
+        desc: `At the end of the charge phase, you can pick this unit to carry out the Smash To Rubble monstrous rampage even though it is not a Monster.`,
+        when: [END_OF_CHARGE_PHASE],
+      },
+      {
+        name: `Searing Desert Winds`,
+        desc: `After this unit makes a normal move (including if it moves at the end of the shooting phase), pick 1 enemy unit this model moved across. On a 3+ it suffers D3 mortal wounds.`,
+        when: [MOVEMENT_PHASE, SHOOTING_PHASE],
+      },
+    ],
+  },
+  'Hurakan Spirit of the Wind': {
+    effects: [IntoTheGaleOverSaveEffect, SpiritOfTheWindEffect, LivingCycloneEffect],
+  },
+  'Myari Lightcaller': {
+    mandatory: {
+      spells: [keyPicker(spells, ['Dazzling Light'])],
+    },
+    effects: [
+      GenericEffects.WizardOneSpellEffect,
+      DeepThinkersEffect,
+      {
+        name: `Scryowl Familiar`,
+        desc: `Add 1 to casting, unbinding, and dispelling rolls for this model.`,
+        when: [HERO_PHASE],
+      },
+      {
+        name: `Scryowl Familiar`,
+        desc: `You can pick 1 enemy unit within 24" and not visible. The target becomes visible.`,
+        when: [START_OF_HERO_PHASE, START_OF_SHOOTING_PHASE],
+      },
+    ],
+  },
+  "Myari's Purifiers": {
+    effects: [
+      {
+        name: `Guardians`,
+        desc: `Before you allocate a wound or mortal wound to a friendly Myari Lightcaller within 3" of this unit, or instead of making a ward roll for a wound or mortal wound that would be allocated to Myari Lightcaller within 3" of this unit, roll a dice. On a 2+, that wound or mortal wound must be allocated to this unit instead of Myari Lightcaller and cannot be negated.`,
+        when: [WOUND_ALLOCATION_PHASE],
+      },
+      {
+        name: `Purifying Strikes`,
+        desc: `If the unmodified hit roll for an attack made by this unit is 6, that attack causes 1 mortal wound to the target and the attack sequence ends (do not make a wound or save roll).`,
+        when: [SHOOTING_PHASE, COMBAT_PHASE],
       },
     ],
   },
